@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Larry Otieno | Cybersecurity Portfolio</title>
+    <meta name="description" content="Explore Larry Otieno's cybersecurity projects including ThreatScope AI, Secure Farm Database, and malware analysis work. See practical applications of digital forensics and security expertise.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-navy': '#0A1628',
+                        'cyber-blue': '#00D4FF',
+                        'cyber-green': '#39FF14',
+                        'cyber-gray': '#2D3748'
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'monospace'],
+                        'sans': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0A1628 0%, #1A202C 50%, #2D3748 100%);
+            overflow-x: hidden;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .cyber-border {
+            border: 1px solid #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        
+        .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00D4FF;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .project-card {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+        
+        .project-card:hover {
+            border-color: #00D4FF;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+        
+        .project-timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #00D4FF, transparent);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-content {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 45%;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .timeline-content.left {
+            margin-right: auto;
+        }
+        
+        .timeline-content.right {
+            margin-left: auto;
+        }
+        
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            transform: translateY(-50%);
+        }
+        
+        .timeline-content.left::before {
+            right: -20px;
+            border-left-color: rgba(0, 212, 255, 0.3);
+        }
+        
+        .timeline-content.right::before {
+            left: -20px;
+            border-right-color: rgba(0, 212, 255, 0.3);
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .tech-tag {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00D4FF;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .project-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #39FF14;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #00D4FF;
+            margin-top: 0.5rem;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-btn {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: #00D4FF;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-content {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .timeline-item::before {
+                display: none;
+            }
+            
+            .timeline-content::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cyber-navy/90 backdrop-blur-md border-b border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold glow-text">Larry Otieno</h1>
+                    <span class="ml-2 text-sm text-cyber-blue">Cybersecurity Analyst</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Home</a>
+                    <a href="about.html" class="nav-link text-white hover:text-cyber-blue transition-colors">About</a>
+                    <a href="projects.html" class="nav-link text-white hover:text-cyber-blue transition-colors active">Projects</a>
+                    <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center animate-on-scroll">
+                <h1 class="text-5xl lg:text-6xl font-bold mb-6">
+                    <span class="glow-text">My</span> <span class="text-cyber-blue">Projects</span>
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Innovative cybersecurity solutions, digital forensics investigations, and practical applications of security principles
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Project Filter -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="filter-buttons animate-on-scroll">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="ai-ml">AI & Machine Learning</button>
+                <button class="filter-btn" data-filter="forensics">Digital Forensics</button>
+                <button class="filter-btn" data-filter="security">Cybersecurity</button>
+                <button class="filter-btn" data-filter="database">Database Systems</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Projects -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Featured Projects</h2>
+                <p class="text-xl text-gray-300">
+                    Comprehensive cybersecurity solutions with real-world applications
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+                <div class="project-card animate-on-scroll" data-category="ai-ml security" id="threatscope">
+                    <div class="h-64 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/d3lkc3n5th01x7.cloudfront.net/94ca17e9922b155ea007014144b9fe4cae9ab624.png" alt="ThreatScope AI Dashboard" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-3xl font-bold text-cyber-blue mb-4">ThreatScope AI</h3>
+                    <p class="text-gray-300 mb-6 text-lg leading-relaxed">
+                        An advanced AI-driven cyber threat prediction platform that leverages machine learning algorithms to analyze multiple data sources including social media trends, dark web activities, and open-source intelligence. The system provides proactive defense mechanisms for organizations by predicting potential cyber threats before they materialize.
+                    </p>
+                    
+                    <div class="project-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Threat Detection Accuracy</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Continuous Monitoring</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">15+</div>
+                            <div class="stat-label">Data Sources</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-stack">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Machine Learning</span>
+                        <span class="tech-tag">TensorFlow</span>
+                        <span class="tech-tag"> threat Intelligence</span>
+                        <span class="tech-tag">Data Analysis</span>
+                        <span class="tech-tag">API Integration</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h4 class="text-xl font-bold text-cyber-green">Key Features:</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• Real-time threat prediction using ML algorithms</li>
+                            <li>• Multi-source data aggregation and analysis</li>
+                            <li>• Automated alert system for security teams</li>
+                            <li>• Predictive analytics for threat trend forecasting</li>
+                            <li>• Integration with existing security infrastructure</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <a href="contact.html" class="cyber-border px-6 py-3 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 font-semibold">
+                            Discuss This Project
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="project-card animate-on-scroll" data-category="database security" id="farmdb">
+                    <div class="h-64 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/jelvix.com/6a2cf8b1852a20ad1255445fc02a6b05922bb1d7.jpg" alt="Secure Database Architecture" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-3xl font-bold text-cyber-blue mb-4">Secure Farm Database</h3>
+                    <p class="text-gray-300 mb-6 text-lg leading-relaxed">
+                        A comprehensive secure database system designed specifically for small-scale farmers and farm managers who need reliable, offline tools to track agricultural operations without complex cloud infrastructure. Built with security-first principles using Python and SQLite, providing encrypted data storage and access control.
+                    </p>
+                    
+                    <div class="project-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">256-bit</div>
+                            <div class="stat-label">AES Encryption</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Offline Capability</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50+</div>
+                            <div class="stat-label">Data Fields</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-stack">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">SQLite</span>
+                        <span class="tech-tag">AES Encryption</span>
+                        <span class="tech-tag">Access Control</span>
+                        <span class="tech-tag">Data Validation</span>
+                        <span class="tech-tag">Backup Systems</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h4 class="text-xl font-bold text-cyber-green">Key Features:</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• Local, offline database operations</li>
+                            <li>• Encrypted data storage and transmission</li>
+                            <li>• Multi-user access control system</li>
+                            <li>• Automated backup and recovery</li>
+                            <li>• Customizable data fields for different farm types</li>
+                            <li>• Export capabilities for compliance reporting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <a href="contact.html" class="cyber-border px-6 py-3 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 font-semibold">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Project Timeline -->
+    <section class="py-20 bg-cyber-navy/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Project Timeline</h2>
+                <p class="text-xl text-gray-300">
+                    Evolution of my cybersecurity expertise through hands-on projects
+                </p>
+            </div>
+            
+            <div class="project-timeline">
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-content left">
+                        <h3 class="text-2xl font-bold text-cyber-blue mb-2">2023 - Foundation Year</h3>
+                        <h4 class="text-xl font-semibold mb-4">Network Security Fundamentals</h4>
+                        <p class="text-gray-300 mb-4">
+                            Started my journey with basic network security concepts, learning about firewalls, intrusion detection systems, and network protocols. Completed several lab exercises using pfSense and Wireshark.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">pfSense</span>
+                            <span class="tech-tag">Wireshark</span>
+                            <span class="tech-tag">TCP/IP</span>
+                            <span class="tech-tag">Firewalls</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-content right">
+                        <h3 class="text-2xl font-bold text-cyber-blue mb-2">2024 - Specialization</h3>
+                        <h4 class="text-xl font-semibold mb-4">Digital Forensics & Incident Response</h4>
+                        <p class="text-gray-300 mb-4">
+                            Deep dive into digital forensics using tools like Autopsy and FTK. Learned evidence collection, chain of custody, and incident response procedures. Conducted mock forensic investigations.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Autopsy</span>
+                            <span class="tech-tag">FTK</span>
+                            <span class="tech-tag">Volatility</span>
+                            <span class="tech-tag">Incident Response</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-content left">
+                        <h3 class="text-2xl font-bold text-cyber-blue mb-2">2024 - Advanced Projects</h3>
+                        <h4 class="text-xl font-semibold mb-4">ThreatScope AI & Secure Database</h4>
+                        <p class="text-gray-300 mb-4">
+                            Developed two major projects: an AI-driven threat prediction platform and a secure farm database system. These projects combined machine learning, database security, and practical application development.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">SQLite</span>
+                            <span class="tech-tag">Encryption</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-content right">
+                        <h3 class="text-2xl font-bold text-cyber-blue mb-2">2025 - Current</h3>
+                        <h4 class="text-xl font-semibold mb-4">Ethical Hacking & Penetration Testing</h4>
+                        <p class="text-gray-300 mb-4">
+                            Currently focused on ethical hacking techniques, vulnerability assessment, and penetration testing using tools like Burp Suite, OWASP ZAP, and Metasploit. Preparing for industry certifications.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Burp Suite</span>
+                            <span class="tech-tag">OWASP ZAP</span>
+                            <span class="tech-tag">Metasploit</span>
+                            <span class="tech-tag">Kali Linux</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technical Skills Matrix -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Technical Skills Matrix</h2>
+                <p class="text-xl text-gray-300">
+                    Comprehensive overview of technologies and tools mastered through projects
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-cyber-blue mb-4">Programming Languages</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span>Python</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Java</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>JavaScript</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>SQL</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-cyber-blue mb-4">Security Tools</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span>Wireshark</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Autopsy</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Burp Suite</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>OWASP ZAP</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-cyber-blue mb-4">Frameworks & Libraries</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span>TensorFlow</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Flask</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>SQLite</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Metasploit</span>
+                            <div class="w-32 bg-cyber-gray rounded-full h-2">
+                                <div class="bg-cyber-green h-2 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Additional Projects -->
+    <section class="py-20 bg-cyber-navy/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Additional Projects</h2>
+                <p class="text-xl text-gray-300">
+                    Other cybersecurity initiatives and academic work
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card animate-on-scroll" data-category="forensics security" id="malware">
+                    <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/kravensecurity.com/7da131601d607b6df9512babab4fbaf02b7f5e1e.jpg" alt="Malware Analysis" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-xl font-bold text-cyber-blue mb-4">Malware Analysis Lab</h3>
+                    <p class="text-gray-300 mb-4">
+                        Comprehensive malware analysis project involving static and dynamic analysis techniques, reverse engineering, and threat assessment using industry-standard tools.
+                    </p>
+                    <div class="tech-stack mb-4">
+                        <span class="tech-tag">Reverse Engineering</span>
+                        <span class="tech-tag">Sandbox Analysis</span>
+                        <span class="tech-tag">Threat Assessment</span>
+                    </div>
+                    <a href="contact.html" class="text-cyber-blue hover:text-cyber-green transition-colors font-semibold">
+                        Learn More →
+                    </a>
+                </div>
+                
+                <div class="project-card animate-on-scroll" data-category="security">
+                    <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/img2.helpnetsecurity.com/2308f38cd34fca3665bf6fd9c6a94e714b513583.jpg" alt="Network Security" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-xl font-bold text-cyber-blue mb-4">Network Security Assessment</h3>
+                    <p class="text-gray-300 mb-4">
+                        Comprehensive network security audit and vulnerability assessment for academic institutions, including penetration testing and security policy development.
+                    </p>
+                    <div class="tech-stack mb-4">
+                        <span class="tech-tag">Penetration Testing</span>
+                        <span class="tech-tag">Vulnerability Assessment</span>
+                        <span class="tech-tag">Security Policies</span>
+                    </div>
+                    <a href="contact.html" class="text-cyber-blue hover:text-cyber-green transition-colors font-semibold">
+                        Learn More →
+                    </a>
+                </div>
+                
+                <div class="project-card animate-on-scroll" data-category="forensics">
+                    <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/images.squarespace-cdn.com/f0deccadfdfe12b466413f177daacad0fe68f4a9.png" alt="Digital Forensics" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-xl font-bold text-cyber-blue mb-4">Digital Evidence Analysis</h3>
+                    <p class="text-gray-300 mb-4">
+                        Hands-on digital forensics investigation involving evidence collection, analysis, and reporting using professional forensic tools and methodologies.
+                    </p>
+                    <div class="tech-stack mb-4">
+                        <span class="tech-tag">Evidence Collection</span>
+                        <span class="tech-tag">Chain of Custody</span>
+                        <span class="tech-tag">Forensic Reporting</span>
+                    </div>
+                    <a href="contact.html" class="text-cyber-blue hover:text-cyber-green transition-colors font-semibold">
+                        Learn More →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
+            <h2 class="text-4xl font-bold mb-6 glow-text">Interested in My Work?</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                Let's discuss how my cybersecurity expertise can contribute to your projects or organization
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="contact.html" class="cyber-border px-8 py-4 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 font-semibold text-lg">
+                    Start a Conversation
+                </a>
+                <a href="about.html" class="border border-cyber-green px-8 py-4 rounded-lg text-cyber-green hover:bg-cyber-green hover:text-cyber-navy transition-all duration-300 font-semibold text-lg">
+                    Learn More About Me
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 border-t border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold glow-text mb-4">Larry Otieno</h3>
+                <p class="text-gray-300 mb-4">Computer Security & Forensics Student</p>
+                <p class="text-sm text-gray-400">
+                     © <span id="current-year"></span> Larry Otieno. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Project filtering functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter projects
+                    projectCards.forEach(card => {
+                        if (filter === 'all') {
+                            card.style.display = 'block';
+                        } else {
+                            const categories = card.dataset.category;
+                            if (categories && categories.includes(filter)) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        });
+        (function setCopyrightYear(){
+            const el = document.getElementById('current-year');
+            if (el) el.textContent = new Date().getFullYear();
+        })();
+    </script>
+</body>
+</html>

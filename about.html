@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Larry Otieno | Cybersecurity Portfolio</title>
+    <meta name="description" content="Learn about Larry Otieno, Computer Security and Forensics student at Kabarak University. Discover his background, education, and passion for cybersecurity.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-navy': '#0A1628',
+                        'cyber-blue': '#00D4FF',
+                        'cyber-green': '#39FF14',
+                        'cyber-gray': '#2D3748'
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'monospace'],
+                        'sans': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0A1628 0%, #1A202C 50%, #2D3748 100%);
+            overflow-x: hidden;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .cyber-border {
+            border: 1px solid #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        
+        .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00D4FF;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00D4FF;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% + 1rem);
+            background: linear-gradient(to bottom, #00D4FF, transparent);
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        .cert-card {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cert-card:hover {
+            border-color: #00D4FF;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+        
+        .philosophy-card {
+            background: rgba(45, 55, 72, 0.6);
+            border-left: 4px solid #00D4FF;
+            padding: 2rem;
+            border-radius: 0 12px 12px 0;
+            margin: 2rem 0;
+        }
+        
+        .quiz-container {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .quiz-option {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .quiz-option:hover {
+            border-color: #00D4FF;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .quiz-feedback.correct {
+            background: rgba(57, 255, 20, 0.2);
+            border: 1px solid #39FF14;
+        }
+        
+        .quiz-feedback.incorrect {
+            background: rgba(255, 7, 58, 0.2);
+            border: 1px solid #FF073A;
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cyber-navy/90 backdrop-blur-md border-b border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold glow-text">Larry Otieno</h1>
+                    <span class="ml-2 text-sm text-cyber-blue">Cybersecurity Analyst</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Home</a>
+                    <a href="about.html" class="nav-link text-white hover:text-cyber-blue transition-colors active">About</a>
+                    <a href="projects.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Projects</a>
+                    <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center animate-on-scroll">
+                <h1 class="text-5xl lg:text-6xl font-bold mb-6">
+                    <span class="glow-text">About</span> <span class="text-cyber-blue">Me</span>
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Passionate about cybersecurity, digital forensics, and protecting digital assets in an increasingly connected world
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Personal Story -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-on-scroll">
+                    <div class="h-96 bg-cyber-gray rounded-lg overflow-hidden">
+                        <img src="https://kimi-web-img.moonshot.cn/img/images.credly.com/1305a84ab0dac698afcd10d9547c3a08d34bc8aa.png" alt="Cybersecurity Professional" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                
+                <div class="animate-on-scroll">
+                    <h2 class="text-3xl font-bold mb-6 text-cyber-blue">My Journey</h2>
+                    <p class="text-lg text-gray-300 mb-6 leading-relaxed">
+                        My fascination with cybersecurity began with a simple question: "How can we protect the digital world from malicious actors?" This curiosity led me to pursue a Bachelor of Science in Computer Security and Forensics at Kabarak University, where I'm developing the skills and knowledge to answer that question.
+                    </p>
+                    <p class="text-lg text-gray-300 mb-6 leading-relaxed">
+                        Growing up in Nairobi, Kenya, I witnessed firsthand how technology transforms lives and businesses. However, I also saw the vulnerabilities that come with digital transformation. This dual perspective drives my commitment to creating secure digital environments that enable innovation while protecting sensitive information.
+                    </p>
+                    <p class="text-lg text-gray-300 leading-relaxed">
+                        Today, I specialize in digital forensics, threat analysis, and incident response, combining technical expertise with a deep understanding of the human factors in cybersecurity.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Education Timeline -->
+    <section class="py-20 bg-cyber-navy/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Education & Timeline</h2>
+                <p class="text-xl text-gray-300">
+                    Academic journey and professional development
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="timeline-item animate-on-scroll">
+                    <div class="bg-cyber-gray/30 rounded-lg p-6 border border-cyber-blue/20">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-cyber-blue">Bachelor of Science in Computer Security and Forensics</h3>
+                            <span class="text-cyber-green font-semibold">2023 - 2026</span>
+                        </div>
+                        <p class="text-lg font-semibold mb-2">Kabarak University, Nakuru, Kenya</p>
+                        <p class="text-gray-300 mb-4">
+                            Comprehensive program covering cybersecurity fundamentals, digital forensics, network security, ethical hacking, data encryption, IT risk management, and database systems.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-semibold text-cyber-green mb-2">Core Subjects:</h4>
+                                <ul class="text-gray-300 space-y-1">
+                                    <li>• Cybersecurity Fundamentals</li>
+                                    <li>• Digital Forensics</li>
+                                    <li>• Network Security</li>
+                                    <li>• Ethical Hacking</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-cyber-green mb-2">Specialized Areas:</h4>
+                                <ul class="text-gray-300 space-y-1">
+                                    <li>• Data Encryption (AES, RSA)</li>
+                                    <li>• IT Risk Management</li>
+                                    <li>• Database Systems Security</li>
+                                    <li>• Incident Response</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item animate-on-scroll">
+                    <div class="bg-cyber-gray/30 rounded-lg p-6 border border-cyber-blue/20">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-cyber-blue">Diploma in Cyber Security</h3>
+                            <span class="text-cyber-green font-semibold">2024</span>
+                        </div>
+                        <p class="text-lg font-semibold mb-2">NIST CSF 2.0 & CSA Security Guidance v5</p>
+                        <p class="text-gray-300">
+                            Specialized training in cybersecurity frameworks and cloud security best practices, focusing on the NIST Cybersecurity Framework and Cloud Security Alliance guidelines.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item animate-on-scroll">
+                    <div class="bg-cyber-gray/30 rounded-lg p-6 border border-cyber-blue/20">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-cyber-blue">IBM Skills Build Cybersecurity Certificate</h3>
+                            <span class="text-cyber-green font-semibold">In Progress</span>
+                        </div>
+                        <p class="text-lg font-semibold mb-2">Expected Completion: November 2025</p>
+                        <p class="text-gray-300">
+                            Industry-recognized certification program covering advanced cybersecurity concepts, threat detection, and security operations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Certifications -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Certifications & Achievements</h2>
+                <p class="text-xl text-gray-300">
+                    Professional credentials and industry recognition
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="cert-card animate-on-scroll">
+                    <div class="h-32 bg-cyber-blue/20 rounded-lg mb-4 flex items-center justify-center">
+                        <img src="https://kimi-web-img.moonshot.cn/img/images.credly.com/1305a84ab0dac698afcd10d9547c3a08d34bc8aa.png" alt="NIST Certification" class="h-20 w-auto">
+                    </div>
+                    <h3 class="text-xl font-bold text-cyber-blue mb-2">NIST CSF 2.0</h3>
+                    <p class="text-gray-300 mb-4">Comprehensive training in the NIST Cybersecurity Framework version 2.0</p>
+                    <div class="text-cyber-green font-semibold">Completed 2024</div>
+                </div>
+                
+                <div class="cert-card animate-on-scroll">
+                    <div class="h-32 bg-cyber-blue/20 rounded-lg mb-4 flex items-center justify-center">
+                        <img src="https://kimi-web-img.moonshot.cn/img/cybersecuritycanada.com/af29b2344dce9878f2d187062df18dbcffa7d1b5.png" alt="CSA Certification" class="h-20 w-auto">
+                    </div>
+                    <h3 class="text-xl font-bold text-cyber-blue mb-2">CSA Security Guidance v5</h3>
+                    <p class="text-gray-300 mb-4">Cloud Security Alliance Security Guidance version 5 certification</p>
+                    <div class="text-cyber-green font-semibold">Completed 2025</div>
+                </div>
+                
+                <div class="cert-card animate-on-scroll">
+                    <div class="h-32 bg-cyber-blue/20 rounded-lg mb-4 flex items-center justify-center">
+                        <img src="https://kimi-web-img.moonshot.cn/img/gsdcdata.s3.amazonaws.com/c9962187188d2924fe5b0cc25e7784504c2a165a.jpg" alt="IBM Certification" class="h-20 w-auto">
+                    </div>
+                    <h3 class="text-xl font-bold text-cyber-blue mb-2">IBM Skills Build Cybersecurity</h3>
+                    <p class="text-gray-300 mb-4">Advanced cybersecurity concepts and threat detection techniques</p>
+                    <div class="text-cyber-green font-semibold">Completed 2025</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Philosophy -->
+    <section class="py-20 bg-cyber-navy/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">My Philosophy</h2>
+                <p class="text-xl text-gray-300">
+                    Core principles that guide my approach to cybersecurity
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="philosophy-card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-cyber-blue mb-4">Security Through Understanding</h3>
+                    <p class="text-lg text-gray-300 leading-relaxed">
+                        True cybersecurity isn't just about building walls—it's about understanding the mindset of both attackers and defenders. Every security measure should be designed with a deep understanding of potential threats, user behavior, and the evolving landscape of digital risks.
+                    </p>
+                </div>
+                
+                <div class="philosophy-card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-cyber-blue mb-4">Proactive Defense</h3>
+                    <p class="text-lg text-gray-300 leading-relaxed">
+                        In cybersecurity, we can't afford to be reactive. The most effective security strategies anticipate threats before they materialize. This means continuous monitoring, threat intelligence, and staying ahead of emerging attack vectors through research and innovation.
+                    </p>
+                </div>
+                
+                <div class="philosophy-card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-cyber-blue mb-4">Ethical Responsibility</h3>
+                    <p class="text-lg text-gray-300 leading-relaxed">
+                        With great technical knowledge comes great responsibility. Every tool, technique, and piece of knowledge in cybersecurity must be used ethically and legally. Protecting privacy, respecting laws, and maintaining professional integrity are non-negotiable principles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Security Knowledge Quiz -->
+    <section class="py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 animate-on-scroll">
+                <h2 class="text-4xl font-bold mb-6 glow-text">Test Your Cybersecurity Knowledge</h2>
+                <p class="text-xl text-gray-300">
+                    Challenge yourself with questions related to my field of expertise
+                </p>
+            </div>
+            
+            <div id="security-quiz" class="quiz-container animate-on-scroll">
+                <!-- Quiz content will be loaded by JavaScript -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-20 bg-cyber-navy/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
+            <h2 class="text-4xl font-bold mb-6 glow-text">Let's Work Together</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                Interested in collaborating on cybersecurity projects or discussing internship opportunities?
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="contact.html" class="cyber-border px-8 py-4 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 font-semibold text-lg">
+                    Get In Touch
+                </a>
+                <a href="projects.html" class="border border-cyber-green px-8 py-4 rounded-lg text-cyber-green hover:bg-cyber-green hover:text-cyber-navy transition-all duration-300 font-semibold text-lg">
+                    View My Work
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 border-t border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold glow-text mb-4">Larry Otieno</h3>
+                <p class="text-gray-300 mb-4">Computer Security & Forensics Student</p>
+                <p class="text-sm text-gray-400">
+                     © <span id="current-year"></span> Larry Otieno. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    <script>
+        (function setCopyrightYear(){
+            const el = document.getElementById('current-year');
+            if (el) el.textContent = new Date().getFullYear();
+        })();
+    </script>
+</body>
+</html>

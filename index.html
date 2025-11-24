@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Larry Otieno - Cybersecurity & Digital Forensics Portfolio</title>
+    <meta name="description" content="Professional portfolio of Larry Otieno, Computer Security and Forensics student at Kabarak University. Specializing in cybersecurity, threat analysis, and digital forensics.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/splitting@1.0.6/dist/splitting.css" rel="stylesheet">
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-navy': '#0A1628',
+                        'cyber-blue': '#00D4FF',
+                        'cyber-green': '#39FF14',
+                        'cyber-gray': '#2D3748'
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'monospace'],
+                        'sans': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0A1628 0%, #1A202C 50%, #2D3748 100%);
+            overflow-x: hidden;
+        }
+        
+        .hero-bg {
+            background: url('resources/hero-cybersecurity.png') center/cover no-repeat;
+            position: relative;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 22, 40, 0.7);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .cyber-border {
+            border: 1px solid #00D4FF;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .threat-indicator {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid #00D4FF;
+            position: relative;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .threat-indicator:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        
+        .threat-gauge {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: #39FF14;
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            transition: all 1s ease;
+        }
+        
+        .threat-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .threat-level {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #39FF14;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skills-radar {
+            width: 100%;
+            height: 400px;
+            margin: 2rem 0;
+        }
+        
+        .project-card {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .project-card:hover {
+            border-color: #00D4FF;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        
+        .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00D4FF;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .stat-counter {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #39FF14;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+        }
+        
+        .notification.success {
+            background: #39FF14;
+            color: #0A1628;
+        }
+        
+        .notification.error {
+            background: #FF073A;
+        }
+        
+        .skill-tooltip {
+            position: absolute;
+            background: rgba(45, 55, 72, 0.95);
+            border: 1px solid #00D4FF;
+            border-radius: 8px;
+            padding: 1rem;
+            color: white;
+            font-size: 0.9rem;
+            z-index: 1000;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .quiz-option {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .quiz-option:hover {
+            border-color: #00D4FF;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .quiz-feedback.correct {
+            background: rgba(57, 255, 20, 0.2);
+            border: 1px solid #39FF14;
+        }
+        
+        .quiz-feedback.incorrect {
+            background: rgba(255, 7, 58, 0.2);
+            border: 1px solid #FF073A;
+        }
+        
+        @media (max-width: 768px) {
+            .threat-indicator {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .threat-level {
+                font-size: 1.5rem;
+            }
+            
+            .skills-radar {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+    <!-- Particle Background Canvas -->
+    <canvas id="particle-canvas" class="particle-canvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cyber-navy/90 backdrop-blur-md border-b border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold glow-text">Larry Otieno</h1>
+                    <span class="ml-2 text-sm text-cyber-blue">Cybersecurity Analyst</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-white hover:text-cyber-blue transition-colors">Home</a>
+                    <a href="about.html" class="nav-link text-white hover:text-cyber-blue transition-colors">About</a>
+                    <a href="projects.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Projects</a>
+                    <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-white hover:text-cyber-blue">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen flex items-center pt-16">
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-on-scroll">
+                    <h1 class="text-5xl lg:text-7xl font-bold mb-6">
+                        <span class="glow-text">Larry</span><br>
+                        <span class="text-cyber-blue">Otieno</span>
+                    </h1>
+                    <div class="text-2xl lg:text-3xl mb-8">
+                        <span class="typewriter-text"></span>
+                    </div>
+                    <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                        Dedicated Computer Security and Forensics student at Kabarak University with a strong foundation in cybersecurity principles, digital forensics, and IT systems management. Passionate about leveraging technology to enhance data security and protect sensitive information.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="projects.html" class="cyber-border px-8 py-3 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 text-center font-semibold">
+                            View Projects
+                        </a>
+                        <a href="contact.html" class="border border-cyber-green px-8 py-3 rounded-lg text-cyber-green hover:bg-cyber-green hover:text-cyber-navy transition-all duration-300 text-center font-semibold">
+                            Get In Touch
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="animate-on-scroll">
+                    <div id="threat-indicator" class="threat-indicator">
+                        <div class="threat-gauge"></div>
+                        <div class="threat-content">
+                            <div class="threat-level">LOW</div>
+                            <div class="threat-description text-sm">Normal operations</div>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-cyber-blue text-sm">
+                        Click to simulate threat levels
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-cyber-navy/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6 glow-text">Technical Skills</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Comprehensive expertise across cybersecurity domains, programming languages, and forensic tools
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-on-scroll">
+                    <div id="skills-radar" class="skills-radar"></div>
+                </div>
+                
+                <div class="animate-on-scroll">
+                    <div class="space-y-6">
+                        <div class="skill-category">
+                            <h3 class="text-2xl font-bold text-cyber-blue mb-4">Programming & Development</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="skill-item p-4 bg-cyber-gray/30 rounded-lg border border-cyber-blue/20">
+                                    <h4 class="font-semibold text-cyber-green">Python</h4>
+                                    <p class="text-sm text-gray-300">85% Proficiency</p>
+                                </div>
+                                <div class="skill-item p-4 bg-cyber-gray/30 rounded-lg border border-cyber-blue/20">
+                                    <h4 class="font-semibold text-cyber-green">Java</h4>
+                                    <p class="text-sm text-gray-300">75% Proficiency</p>
+                                </div>
+                                <div class="skill-item p-4 bg-cyber-gray/30 rounded-lg border border-cyber-blue/20">
+                                    <h4 class="font-semibold text-cyber-green">Web Development</h4>
+                                    <p class="text-sm text-gray-300">80% Proficiency</p>
+                                </div>
+                                <div class="skill-item p-4 bg-cyber-gray/30 rounded-lg border border-cyber-blue/20">
+                                    <h4 class="font-semibold text-cyber-green">Database Systems</h4>
+                                    <p class="text-sm text-gray-300">78% Proficiency</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-category">
+                            <h3 class="text-2xl font-bold text-cyber-blue mb-4">Security & Forensics</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-cyber-gray/30 rounded-lg">
+                                    <span class="font-medium">Digital Forensics</span>
+                                    <span class="text-cyber-green font-bold">90%</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-cyber-gray/30 rounded-lg">
+                                    <span class="font-medium">Network Security</span>
+                                    <span class="text-cyber-green font-bold">80%</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-cyber-gray/30 rounded-lg">
+                                    <span class="font-medium">Ethical Hacking</span>
+                                    <span class="text-cyber-green font-bold">85%</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-cyber-gray/30 rounded-lg">
+                                    <span class="font-medium">Threat Analysis</span>
+                                    <span class="text-cyber-green font-bold">88%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section id="stats" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center animate-on-scroll">
+                <div class="stat-item">
+                    <div class="stat-counter" data-target="5">0</div>
+                    <h3 class="text-xl font-semibold text-cyber-blue">Projects Completed</h3>
+                    <p class="text-gray-300">Cybersecurity & Forensics</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-counter" data-target="3">0</div>
+                    <h3 class="text-xl font-semibold text-cyber-blue">Certifications</h3>
+                    <p class="text-gray-300">Industry Recognized</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-counter" data-target="90">0</div>
+                    <h3 class="text-xl font-semibold text-cyber-blue">Academic Score</h3>
+                    <p class="text-gray-300">University Performance</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-counter" data-target="2">0</div>
+                    <h3 class="text-xl font-semibold text-cyber-blue">Years Experience</h3>
+                    <p class="text-gray-300">Hands-on Projects</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Projects -->
+    <section id="projects" class="py-20 bg-cyber-navy/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6 glow-text">Featured Projects</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Innovative cybersecurity solutions and digital forensics investigations
+                </p>
+            </div>
+            
+            <div class="project-carousel splide animate-on-scroll">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <div class="project-card">
+                                <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/d3lkc3n5th01x7.cloudfront.net/94ca17e9922b155ea007014144b9fe4cae9ab624.png" alt="ThreatScope AI" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="text-2xl font-bold text-cyber-blue mb-4">ThreatScope AI</h3>
+                                <p class="text-gray-300 mb-4">
+                                    AI-driven cyber threat prediction platform that analyzes social media, dark web, and open-source data to enable proactive defense mechanisms for organizations.
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Python</span>
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Machine Learning</span>
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Threat Intelligence</span>
+                                </div>
+                                <a href="projects.html#threatscope" class="inline-block cyber-border px-6 py-2 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300">
+                                    View Details
+                                </a>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="project-card">
+                                <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/jelvix.com/6a2cf8b1852a20ad1255445fc02a6b05922bb1d7.jpg" alt="Secure Farm Database" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="text-2xl font-bold text-cyber-blue mb-4">Secure Farm Database</h3>
+                                <p class="text-gray-300 mb-4">
+                                    Basic secure database for farm records built with Python and sqlite3, providing local offline tools for small-scale farmers to track operations without complex cloud setups.
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Python</span>
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">SQLite</span>
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Data Security</span>
+                                </div>
+                                <a href="projects.html#farmdb" class="inline-block cyber-border px-6 py-2 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300">
+                                    View Details
+                                </a>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="project-card">
+                                <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/kravensecurity.com/7da131601d607b6df9512babab4fbaf02b7f5e1e.jpg" alt="Malware Analysis" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="text-2xl font-bold text-cyber-blue mb-4">Malware Analysis Lab</h3>
+                                <p class="text-gray-300 mb-4">
+                                    Comprehensive malware analysis project involving static and dynamic analysis techniques, reverse engineering, and threat assessment using industry-standard tools.
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Reverse Engineering</span>
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Sandbox Analysis</span>
+                                    <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Threat Assessment</span>
+                                </div>
+                                <a href="projects.html#malware" class="inline-block cyber-border px-6 py-2 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300">
+                                    View Details
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 animate-on-scroll">
+                <a href="projects.html" class="cyber-border px-8 py-3 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 font-semibold">
+                    View All Projects
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Security Quiz -->
+    <section id="quiz" class="py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 animate-on-scroll">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6 glow-text">Test Your Knowledge</h2>
+                <p class="text-xl text-gray-300">
+                    Challenge yourself with this cybersecurity quiz
+                </p>
+            </div>
+            
+            <div id="security-quiz" class="bg-cyber-gray/30 rounded-lg p-8 cyber-border animate-on-scroll">
+                <!-- Quiz content will be loaded by JavaScript -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section id="cta" class="py-20 bg-cyber-navy/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6 glow-text">Ready to Secure Your Digital Assets?</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                Let's collaborate on your next cybersecurity project or discuss internship opportunities
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="contact.html" class="cyber-border px-8 py-4 rounded-lg text-cyber-blue hover:bg-cyber-blue hover:text-cyber-navy transition-all duration-300 font-semibold text-lg">
+                    Start a Conversation
+                </a>
+                <a href="about.html" class="border border-cyber-green px-8 py-4 rounded-lg text-cyber-green hover:bg-cyber-green hover:text-cyber-navy transition-all duration-300 font-semibold text-lg">
+                    Learn More About Me
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 border-t border-cyber-blue/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold glow-text mb-4">Larry Otieno</h3>
+                <p class="text-gray-300 mb-4">Computer Security & Forensics Student</p>
+                <p class="text-sm text-gray-400"> 
+                     © <span id="current-year"></span> Larry Otieno. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+     <script>
+        (function setCopyrightYear(){
+            const el = document.getElementById('current-year');
+            if (el) el.textContent = new Date().getFullYear();
+        })();
+    </script>
+</body>
+</html>
