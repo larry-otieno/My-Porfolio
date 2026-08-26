@@ -12,8 +12,8 @@
 
 @theme {
   /* Type ------------------------------------------------------------------ */
-  --font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Cascadia Code', monospace;
+  --font-sans: 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
 
   /* Fluid type scale - min at 360px viewport, max at 1280px */
   --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
