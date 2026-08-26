@@ -1,0 +1,541 @@
+---
+/**
+ * Client-side hash calculator.
+ *
+ * Replaces the old decorative "threat level" gauge with something that does
+ * real work: the exact operation you perform when acquiring evidence. Runs
+ * entirely in the browser via SubtleCrypto — no upload, no network request,
+ * which is the point and is stated on the page.
+ *
+ * SubtleCrypto deliberately offers no MD5. That is correct for this use, and
+ * the note in the UI says so rather than leaving people wondering.
+ */
+---
+
+<div class="tool card" data-hash-tool>
+  <div class="tool-head">
+    <div>
+      <h3 class="tool-title">Hash calculator</h3>
+      <p class="tool-sub">
+        Verify a file or string the way you would when acquiring evidence.
+        Everything runs in your browser — nothing is uploaded.
+      </p>
+    </div>
+    <span class="badge-local">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+        <rect x="4" y="10.5" width="16" height="10" rx="2"></rect>
+        <path d="M8 10.5V7a4 4 0 018 0v3.5" stroke-linecap="round"></path>
+      </svg>
+      Local only
+    </span>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Input type">
+    <button type="button" role="tab" id="tab-text" aria-controls="panel-text" aria-selected="true" class="tab is-active" data-tab="text">
+      Text
+    </button>
+    <button type="button" role="tab" id="tab-file" aria-controls="panel-file" aria-selected="false" class="tab" data-tab="file" tabindex="-1">
+      File
+    </button>
+  </div>
+
+  <div id="panel-text" role="tabpanel" aria-labelledby="tab-text" class="panel" data-panel="text">
+    <label class="label" for="hash-input">Input</label>
+    <textarea
+      id="hash-input"
+      class="input"
+      rows="3"
+      spellcheck="false"
+      autocomplete="off"
+      placeholder="Type or paste anything…">The quick brown fox jumps over the lazy dog</textarea
+    >
+  </div>
+
+  <div id="panel-file" role="tabpanel" aria-labelledby="tab-file" class="panel" data-panel="file" hidden>
+    <label class="dropzone" data-dropzone>
+      <input type="file" class="sr-only" data-file-input />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M12 16V4m0 0L8 8m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"></path>
+      </svg>
+      <span class="dropzone-text" data-file-label>Choose a file or drop one here</span>
+      <span class="dropzone-hint">Never leaves your device</span>
+    </label>
+  </div>
+
+  <div class="algos" role="group" aria-label="Algorithm">
+    <button type="button" class="algo is-active" data-algo="SHA-256" aria-pressed="true">SHA-256</button>
+    <button type="button" class="algo" data-algo="SHA-1" aria-pressed="false">SHA-1</button>
+    <button type="button" class="algo" data-algo="SHA-384" aria-pressed="false">SHA-384</button>
+    <button type="button" class="algo" data-algo="SHA-512" aria-pressed="false">SHA-512</button>
+  </div>
+
+  <div class="output">
+    <div class="output-head">
+      <span class="label" id="digest-label">Digest</span>
+      <button type="button" class="copy" data-copy hidden>Copy</button>
+    </div>
+    <output class="digest" data-digest aria-labelledby="digest-label" for="hash-input">—</output>
+    <p class="output-meta" data-meta></p>
+  </div>
+
+  <details class="note">
+    <summary>Why is MD5 not offered?</summary>
+    <p>
+      The browser's Web Crypto API deliberately omits MD5, and that is the right
+      call: MD5 is collision-broken and unsuitable for integrity assertions you
+      might need to defend. Forensic tooling still records it for compatibility
+      with older case data, but SHA-256 is what a finding should rest on.
+      SHA-1 is included here because you will still meet it in the wild — it is
+      also collision-broken and should not be relied on for new work.
+    </p>
+  </details>
+
+  <p class="sr-only" role="status" aria-live="polite" data-announce></p>
+</div>
+
+<style>
+  .tool {
+    padding: clamp(1.25rem, 4vw, 1.75rem);
+  }
+
+  .tool-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tool-title {
+    font-size: var(--text-lg);
+  }
+
+  .tool-sub {
+    margin-top: 0.35rem;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    max-width: 48ch;
+  }
+
+  .badge-local {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--success-muted);
+    color: var(--success);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+
+  .badge-local svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  /* Tabs ------------------------------------------------------------------- */
+  .tabs {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.2rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-inset);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 1rem;
+  }
+
+  .tab {
+    padding: 0.35rem 0.8rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition:
+      background 0.2s var(--ease-out-quart),
+      color 0.2s var(--ease-out-quart);
+  }
+
+  .tab.is-active {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-card);
+  }
+
+  .panel[hidden] {
+    display: none;
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+  }
+
+  .input {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--surface-base);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    resize: vertical;
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-muted);
+  }
+
+  /* Dropzone --------------------------------------------------------------- */
+  .dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 1.75rem 1rem;
+    border: 1.5px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--surface-inset);
+    cursor: pointer;
+    text-align: center;
+    transition:
+      border-color 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .dropzone:hover,
+  .dropzone.is-over {
+    border-color: var(--accent);
+    background: var(--accent-muted);
+  }
+
+  .dropzone:has(input:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .dropzone svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--text-tertiary);
+  }
+
+  .dropzone-text {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+
+  .dropzone-hint {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  /* Algorithms ------------------------------------------------------------- */
+  .algos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .algo {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    transition:
+      color 0.2s var(--ease-out-quart),
+      border-color 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .algo:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  .algo.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  /* Output ----------------------------------------------------------------- */
+  .output {
+    margin-top: 1.25rem;
+  }
+
+  .output-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .copy {
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    transition:
+      color 0.2s var(--ease-out-quart),
+      border-color 0.2s var(--ease-out-quart);
+  }
+
+  .copy:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .copy[hidden] {
+    display: none;
+  }
+
+  .digest {
+    display: block;
+    margin-top: 0.15rem;
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-inset);
+    border: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    overflow-wrap: anywhere;
+    line-height: 1.55;
+    min-height: 3.2rem;
+  }
+
+  .output-meta {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    min-height: 1em;
+  }
+
+  /* Note ------------------------------------------------------------------- */
+  .note {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .note summary {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .note summary:hover {
+    color: var(--accent);
+  }
+
+  .note p {
+    margin-top: 0.6rem;
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  const tool = document.querySelector<HTMLElement>('[data-hash-tool]');
+
+  if (tool) {
+    const textarea = tool.querySelector<HTMLTextAreaElement>('#hash-input')!;
+    const fileInput = tool.querySelector<HTMLInputElement>('[data-file-input]')!;
+    const fileLabel = tool.querySelector<HTMLElement>('[data-file-label]')!;
+    const dropzone = tool.querySelector<HTMLElement>('[data-dropzone]')!;
+    const digestEl = tool.querySelector<HTMLElement>('[data-digest]')!;
+    const metaEl = tool.querySelector<HTMLElement>('[data-meta]')!;
+    const copyBtn = tool.querySelector<HTMLButtonElement>('[data-copy]')!;
+    const announce = tool.querySelector<HTMLElement>('[data-announce]')!;
+    const tabs = Array.from(tool.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const panels = Array.from(tool.querySelectorAll<HTMLElement>('[data-panel]'));
+    const algos = Array.from(tool.querySelectorAll<HTMLButtonElement>('[data-algo]'));
+
+    let algorithm = 'SHA-256';
+    let mode: 'text' | 'file' = 'text';
+    let file: File | null = null;
+
+    const toHex = (buffer: ArrayBuffer) =>
+      Array.from(new Uint8Array(buffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+
+    const formatBytes = (n: number) => {
+      if (n < 1024) return `${n} B`;
+      if (n < 1024 ** 2) return `${(n / 1024).toFixed(1)} KB`;
+      if (n < 1024 ** 3) return `${(n / 1024 ** 2).toFixed(1)} MB`;
+      return `${(n / 1024 ** 3).toFixed(2)} GB`;
+    };
+
+    async function compute() {
+      // Web Crypto requires a secure context; file:// and plain http will not have it
+      if (!crypto?.subtle) {
+        digestEl.textContent = 'Web Crypto is unavailable in this context (requires HTTPS).';
+        metaEl.textContent = '';
+        copyBtn.hidden = true;
+        return;
+      }
+
+      let bytes: ArrayBuffer;
+      let sourceNote: string;
+
+      if (mode === 'file') {
+        if (!file) {
+          digestEl.textContent = '—';
+          metaEl.textContent = '';
+          copyBtn.hidden = true;
+          return;
+        }
+        digestEl.textContent = 'Hashing…';
+        bytes = await file.arrayBuffer();
+        sourceNote = `${file.name} · ${formatBytes(file.size)}`;
+      } else {
+        const value = textarea.value;
+        bytes = new TextEncoder().encode(value).buffer as ArrayBuffer;
+        sourceNote = `${value.length} character${value.length === 1 ? '' : 's'} · UTF-8`;
+      }
+
+      try {
+        const result = await crypto.subtle.digest(algorithm, bytes);
+        const hex = toHex(result);
+        digestEl.textContent = hex;
+        metaEl.textContent = `${algorithm} · ${hex.length * 4} bit · ${sourceNote}`;
+        copyBtn.hidden = false;
+        announce.textContent = `${algorithm} digest computed.`;
+      } catch (error) {
+        console.error('Hashing failed:', error);
+        digestEl.textContent = 'Could not compute a digest for that input.';
+        metaEl.textContent = '';
+        copyBtn.hidden = true;
+      }
+    }
+
+    // Tabs — arrow keys move between them, as expected for a tablist
+    function selectTab(next: HTMLButtonElement) {
+      mode = next.dataset.tab as 'text' | 'file';
+      tabs.forEach((tab) => {
+        const active = tab === next;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== mode;
+      });
+      compute();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => selectTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+        event.preventDefault();
+        const delta = event.key === 'ArrowRight' ? 1 : -1;
+        const next = tabs[(tabs.indexOf(tab) + delta + tabs.length) % tabs.length]!;
+        next.focus();
+        selectTab(next);
+      });
+    });
+
+    algos.forEach((button) => {
+      button.addEventListener('click', () => {
+        algorithm = button.dataset.algo!;
+        algos.forEach((other) => {
+          const active = other === button;
+          other.classList.toggle('is-active', active);
+          other.setAttribute('aria-pressed', String(active));
+        });
+        compute();
+      });
+    });
+
+    // Debounce typing so large inputs are not rehashed on every keystroke
+    let timer: number;
+    textarea.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(compute, 180);
+    });
+
+    fileInput.addEventListener('change', () => {
+      file = fileInput.files?.[0] ?? null;
+      fileLabel.textContent = file ? file.name : 'Choose a file or drop one here';
+      compute();
+    });
+
+    ['dragenter', 'dragover'].forEach((event) =>
+      dropzone.addEventListener(event, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('is-over');
+      })
+    );
+
+    ['dragleave', 'drop'].forEach((event) =>
+      dropzone.addEventListener(event, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('is-over');
+      })
+    );
+
+    dropzone.addEventListener('drop', (event) => {
+      const dropped = (event as DragEvent).dataTransfer?.files?.[0];
+      if (!dropped) return;
+      file = dropped;
+      fileInput.files = (event as DragEvent).dataTransfer!.files;
+      fileLabel.textContent = file.name;
+      compute();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(digestEl.textContent ?? '');
+        copyBtn.textContent = 'Copied';
+        announce.textContent = 'Digest copied to clipboard.';
+        setTimeout(() => (copyBtn.textContent = 'Copy'), 1600);
+      } catch {
+        copyBtn.textContent = 'Press Ctrl+C';
+        setTimeout(() => (copyBtn.textContent = 'Copy'), 1600);
+      }
+    });
+
+    compute();
+  }
+</script>

@@ -1,0 +1,134 @@
+---
+/**
+ * Deterministic cover art generated from the project slug.
+ *
+ * Replaces the stock photography the old site hotlinked from a third-party
+ * CDN: nothing to 404, nothing to optimise, no misleading imagery, and each
+ * project gets a stable identity. The pattern is seeded by the slug, so a
+ * given project always renders the same artwork.
+ */
+interface Props {
+  slug: string;
+  hue: number;
+  category: string;
+  class?: string;
+}
+
+const { slug, hue, category, class: className } = Astro.props;
+
+// Small deterministic hash -> pseudo-random stream, so covers are stable
+// across builds but distinct from each other.
+function hash(input: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+let seed = hash(slug);
+const rand = () => {
+  seed = (seed * 1664525 + 1013904223) >>> 0;
+  return seed / 4294967296;
+};
+
+const uid = `cv-${slug.replace(/[^a-z0-9]/gi, '')}`;
+
+// Concentric ring pattern, offset per project
+const rings = Array.from({ length: 5 }, (_, i) => ({
+  r: 26 + i * 17 + rand() * 8,
+  opacity: 0.32 - i * 0.05,
+  dash: i % 2 === 0 ? 'none' : `${3 + rand() * 5} ${4 + rand() * 6}`,
+}));
+
+// Scattered nodes on a loose grid
+const nodes = Array.from({ length: 14 }, () => ({
+  x: 12 + rand() * 376,
+  y: 12 + rand() * 196,
+  r: 1 + rand() * 2.2,
+  opacity: 0.25 + rand() * 0.5,
+}));
+
+// Connect nodes that happen to land near each other
+const links: Array<{ x1: number; y1: number; x2: number; y2: number; o: number }> = [];
+for (let i = 0; i < nodes.length; i++) {
+  for (let j = i + 1; j < nodes.length; j++) {
+    const a = nodes[i]!;
+    const b = nodes[j]!;
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (d < 96) {
+      links.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, o: 0.22 * (1 - d / 96) });
+    }
+  }
+}
+
+const label = category.replace('-', '/').toUpperCase();
+---
+
+<svg
+  class={className}
+  viewBox="0 0 400 220"
+  role="img"
+  aria-label={`Abstract cover artwork for ${slug}`}
+  preserveAspectRatio="xMidYMid slice"
+>
+  <defs>
+    <linearGradient id={`${uid}-bg`} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color={`hsl(${hue} 62% 16%)`}></stop>
+      <stop offset="55%" stop-color={`hsl(${(hue + 24) % 360} 48% 10%)`}></stop>
+      <stop offset="100%" stop-color={`hsl(${(hue + 48) % 360} 40% 7%)`}></stop>
+    </linearGradient>
+
+    <radialGradient id={`${uid}-glow`} cx="76%" cy="22%" r="68%">
+      <stop offset="0%" stop-color={`hsl(${hue} 92% 62%)`} stop-opacity="0.42"></stop>
+      <stop offset="100%" stop-color={`hsl(${hue} 92% 62%)`} stop-opacity="0"></stop>
+    </radialGradient>
+
+    <pattern id={`${uid}-grid`} width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0v20" fill="none" stroke="#fff" stroke-opacity="0.055" stroke-width="1"></path>
+    </pattern>
+
+    <clipPath id={`${uid}-clip`}>
+      <rect width="400" height="220"></rect>
+    </clipPath>
+  </defs>
+
+  <g clip-path={`url(#${uid}-clip)`}>
+    <rect width="400" height="220" fill={`url(#${uid}-bg)`}></rect>
+    <rect width="400" height="220" fill={`url(#${uid}-grid)`}></rect>
+
+    <g transform="translate(300, 46)" fill="none" stroke={`hsl(${hue} 88% 68%)`}>
+      {
+        rings.map((ring) => (
+          <circle
+            r={ring.r}
+            stroke-opacity={ring.opacity}
+            stroke-width="1"
+            stroke-dasharray={ring.dash === 'none' ? undefined : ring.dash}
+          />
+        ))
+      }
+    </g>
+
+    <g stroke={`hsl(${hue} 80% 72%)`} stroke-width="0.75">
+      {links.map((l) => <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke-opacity={l.o} />)}
+    </g>
+
+    <g fill={`hsl(${hue} 90% 76%)`}>
+      {nodes.map((n) => <circle cx={n.x} cy={n.y} r={n.r} fill-opacity={n.opacity} />)}
+    </g>
+
+    <rect width="400" height="220" fill={`url(#${uid}-glow)`}></rect>
+
+    <text
+      x="20"
+      y="202"
+      font-family="ui-monospace, 'JetBrains Mono', monospace"
+      font-size="10"
+      letter-spacing="2.2"
+      fill="#fff"
+      fill-opacity="0.42">{label}</text
+    >
+  </g>
+</svg>

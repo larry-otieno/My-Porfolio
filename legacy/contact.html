@@ -230,28 +230,68 @@
             border: 1px solid rgba(0, 212, 255, 0.3);
         }
     </style>
+
+    <!-- Shared styles (mobile nav, focus states, motion + no-JS safety nets) -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Icons -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0A1628">
+
+    <!-- Canonical + social sharing -->
+    <link rel="canonical" href="https://larry-otieno.github.io/My-Porfolio/contact.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Larry Otieno">
+    <meta property="og:title" content="Contact - Larry Otieno">
+    <meta property="og:description" content="Get in touch with Larry Otieno about internships, cybersecurity project collaboration or digital forensics work.">
+    <meta property="og:url" content="https://larry-otieno.github.io/My-Porfolio/contact.html">
+    <meta property="og:image" content="https://larry-otieno.github.io/My-Porfolio/hero-cybersecurity.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact - Larry Otieno">
+    <meta name="twitter:description" content="Get in touch with Larry Otieno about internships, cybersecurity project collaboration or digital forensics work.">
+    <meta name="twitter:image" content="https://larry-otieno.github.io/My-Porfolio/hero-cybersecurity.png">
+
+    <!-- Marks scripting as available so CSS can keep content visible if JS fails -->
+    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="font-sans text-white">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-cyber-navy/90 backdrop-blur-md border-b border-cyber-blue/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold glow-text">Larry Otieno</h1>
-                    <span class="ml-2 text-sm text-cyber-blue">Cybersecurity Analyst</span>
+                    <span class="ml-2 text-sm text-cyber-blue hidden sm:inline">Cybersecurity Analyst</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="index.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Home</a>
                     <a href="about.html" class="nav-link text-white hover:text-cyber-blue transition-colors">About</a>
                     <a href="projects.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Projects</a>
-                    <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors active">Contact</a>
+                    <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors active" aria-current="page">Contact</a>
                 </div>
+                <button id="mobile-menu-toggle" type="button" class="mobile-menu-btn md:hidden" aria-label="Open main menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <svg class="menu-icon-open w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg class="menu-icon-close w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu md:hidden hidden">
+            <div class="px-4 py-3 space-y-1">
+                <a href="index.html" class="mobile-nav-link">Home</a>
+                <a href="about.html" class="mobile-nav-link">About</a>
+                <a href="projects.html" class="mobile-nav-link">Projects</a>
+                <a href="contact.html" class="mobile-nav-link active" aria-current="page">Contact</a>
             </div>
         </div>
     </nav>
     
     <!-- Hero Section -->
-    <section class="pt-24 pb-16">
+    <section id="main-content" class="pt-24 pb-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center animate-on-scroll">
                 <h1 class="text-5xl lg:text-6xl font-bold mb-6">
@@ -276,7 +316,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-cyber-blue mb-2">Email</h3>
-                        <p class="text-gray-300 mb-2">otienolarry7@gmail.com</p>
+                        <p class="text-gray-300 mb-2"><a href="mailto:otienolarry7@gmail.com" class="contact-link">otienolarry7@gmail.com</a></p>
                         <p class="text-sm text-gray-400">Response within 24 hours</p>
                     </div>
                 </div>
@@ -289,7 +329,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-cyber-blue mb-2">Phone</h3>
-                        <p class="text-gray-300 mb-2">+254 790 247 511</p>
+                        <p class="text-gray-300 mb-2"><a href="tel:+254790247511" class="contact-link">+254&nbsp;790&nbsp;247&nbsp;511</a></p>
                         <p class="text-sm text-gray-400">Available Mon-Fri, 9AM-6PM EAT</p>
                     </div>
                 </div>
@@ -322,7 +362,20 @@
             </div>
             
             <div class="contact-form animate-on-scroll">
-                <form id="contact-form" class="space-y-6">
+                <!--
+                    SETUP: this form currently has no backend.
+                    1. Create a free form at https://formspree.io (or https://web3forms.com)
+                    2. Paste the endpoint URL into data-endpoint below, e.g.
+                       data-endpoint="https://formspree.io/f/abcdwxyz"
+                    Until that is filled in, submitting opens the visitor's mail client
+                    with the message pre-filled instead of silently discarding it.
+                -->
+                <form id="contact-form" class="space-y-6" method="post" data-endpoint="" data-fallback-email="otienolarry7@gmail.com" novalidate>
+                    <!-- Honeypot: hidden from people, filled in by bots -->
+                    <div class="hidden" aria-hidden="true">
+                        <label for="website">Leave this field empty</label>
+                        <input type="text" id="website" name="_gotcha" tabindex="-1" autocomplete="off">
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="form-group">
                             <label for="name" class="form-label">Full Name *</label>
@@ -383,6 +436,7 @@
                         <button type="submit" class="submit-btn">
                             Send Secure Message
                         </button>
+                        <p id="form-status" class="form-status hidden" role="status" aria-live="polite"></p>
                     </div>
                 </form>
             </div>
@@ -436,9 +490,14 @@
                         </p>
                         
                         <div class="space-y-4">
-                            <a href="#" class="flex items-center p-3 bg-cyber-gray/30 rounded-lg hover:bg-cyber-blue/10 transition-colors">
+                            <!--
+                                TODO: LinkedIn. Restore this block and replace YOUR-HANDLE with the
+                                real profile slug. It is commented out rather than left as href="#"
+                                so the live site never ships a dead link.
+
+                            <a href="https://www.linkedin.com/in/YOUR-HANDLE/" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-cyber-gray/30 rounded-lg hover:bg-cyber-blue/10 transition-colors">
                                 <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                                     </svg>
                                 </div>
@@ -447,8 +506,9 @@
                                     <div class="text-sm text-gray-400">Professional Network</div>
                                 </div>
                             </a>
-                            
-                            <a href="#" class="flex items-center p-3 bg-cyber-gray/30 rounded-lg hover:bg-cyber-blue/10 transition-colors">
+                            -->
+
+                            <a href="https://github.com/larry-otieno" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-cyber-gray/30 rounded-lg hover:bg-cyber-blue/10 transition-colors">
                                 <div class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-4">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -456,29 +516,20 @@
                                 </div>
                                 <div>
                                     <div class="font-semibold">GitHub</div>
-                                    <div class="text-sm text-gray-400">Code Repository</div>
+                                    <div class="text-sm text-gray-400">github.com/larry-otieno</div>
                                 </div>
                             </a>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-card">
-                        <h3 class="text-xl font-bold mb-4 text-cyber-blue">Social Media</h3>
-                        <div class="flex space-x-4">
-                            <a href="#" class="social-link" title="Twitter">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link" title="LinkedIn">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link" title="GitHub">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                </svg>
+
+                            <a href="mailto:otienolarry7@gmail.com" class="flex items-center p-3 bg-cyber-gray/30 rounded-lg hover:bg-cyber-blue/10 transition-colors">
+                                <div class="w-10 h-10 bg-cyber-blue/20 rounded-lg flex items-center justify-center mr-4">
+                                    <svg class="w-5 h-5 text-cyber-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold">Email</div>
+                                    <div class="text-sm text-gray-400">otienolarry7@gmail.com</div>
+                                </div>
                             </a>
                         </div>
                     </div>
@@ -493,45 +544,39 @@
             <div class="text-center mb-12 animate-on-scroll">
                 <h2 class="text-4xl font-bold mb-6 glow-text">Professional References</h2>
                 <p class="text-xl text-gray-300">
-                    Academic and professional contacts who can speak to my capabilities
+                    Academic contacts who can speak to my capabilities
                 </p>
             </div>
-            
+
+            <!--
+                Referee phone numbers and personal email addresses were removed.
+                Publishing a third party's contact details without their consent exposes
+                them to scraping and cold contact. Share them privately on request instead.
+            -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="contact-card animate-on-scroll">
                     <h3 class="text-xl font-bold text-cyber-blue mb-4">Mr. Chrispus Alukwe Akhonya</h3>
                     <p class="text-gray-300 mb-2">Lecturer, Kabarak University</p>
-                    <p class="text-gray-300 mb-4">Computer Science & Security Department</p>
-                    <div class="space-y-2">
-                        <p class="text-sm">
-                            <span class="text-cyber-green">Email:</span> cakhonya@kabarak.ac.ke
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-cyber-green">Phone:</span> +254 720 474 923
-                        </p>
-                    </div>
-                    <p class="text-sm text-gray-400 mt-4">
+                    <p class="text-gray-300 mb-4">Computer Science &amp; Security Department</p>
+                    <p class="text-sm text-gray-400">
                         Academic advisor and cybersecurity course instructor
                     </p>
                 </div>
-                
+
                 <div class="contact-card animate-on-scroll">
                     <h3 class="text-xl font-bold text-cyber-blue mb-4">Ms. Daisy Nyang'anyi Ondwari</h3>
                     <p class="text-gray-300 mb-2">Lecturer, Kabarak University</p>
-                    <p class="text-gray-300 mb-4">Digital Forensics & IT Department</p>
-                    <div class="space-y-2">
-                        <p class="text-sm">
-                            <span class="text-cyber-green">Email:</span> daisyn@kabarak.ac.ke
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-cyber-green">Phone:</span> +254 715 655 434
-                        </p>
-                    </div>
-                    <p class="text-sm text-gray-400 mt-4">
+                    <p class="text-gray-300 mb-4">Digital Forensics &amp; IT Department</p>
+                    <p class="text-sm text-gray-400">
                         Digital forensics and practical security applications
                     </p>
                 </div>
             </div>
+
+            <p class="text-center text-gray-300 mt-8 animate-on-scroll">
+                Full referee contact details are available on request &mdash;
+                <a href="mailto:otienolarry7@gmail.com" class="contact-link text-cyber-blue">just ask</a>.
+            </p>
         </div>
     </section>
     

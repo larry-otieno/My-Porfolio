@@ -1,0 +1,109 @@
+---
+// Cycles light -> dark -> system. The chosen value is persisted; "system"
+// removes the override so the OS preference wins again.
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="theme-toggle"
+  aria-label="Change colour theme"
+  title="Change colour theme"
+>
+  <svg class="icon icon-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+    <rect x="2.5" y="4" width="19" height="13" rx="2"></rect>
+    <path d="M8 20.5h8M12 17.5v3" stroke-linecap="round"></path>
+  </svg>
+  <svg class="icon icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.2"></circle>
+    <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3" stroke-linecap="round"></path>
+  </svg>
+  <svg class="icon icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+    <path d="M20.5 14.2A8.5 8.5 0 019.8 3.5a8.5 8.5 0 1010.7 10.7z" stroke-linejoin="round"></path>
+  </svg>
+  <span id="theme-toggle-state" class="sr-only" aria-live="polite"></span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+      color 0.2s var(--ease-out-quart),
+      border-color 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .theme-toggle:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background: var(--surface-inset);
+  }
+
+  .icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    display: none;
+  }
+
+  /* Which glyph shows depends on the persisted choice, set on <html> */
+  :global(html:not([data-theme])) .icon-system,
+  :global(html[data-theme='light']) .icon-light,
+  :global(html[data-theme='dark']) .icon-dark {
+    display: block;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  type Theme = 'light' | 'dark' | 'system';
+
+  const order: Theme[] = ['system', 'light', 'dark'];
+
+  function current(): Theme {
+    const attr = document.documentElement.getAttribute('data-theme');
+    return attr === 'light' || attr === 'dark' ? attr : 'system';
+  }
+
+  function apply(theme: Theme) {
+    if (theme === 'system') {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.removeItem('theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    const announce = document.getElementById('theme-toggle-state');
+    if (announce) {
+      announce.textContent =
+        theme === 'system' ? 'Theme: follows system setting' : `Theme: ${theme}`;
+    }
+  }
+
+  const toggle = document.getElementById('theme-toggle');
+  toggle?.addEventListener('click', () => {
+    const next = order[(order.indexOf(current()) + 1) % order.length]!;
+    apply(next);
+  });
+</script>

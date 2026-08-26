@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Page not found" description="That page does not exist.">
+  <section class="section notfound">
+    <div class="shell-narrow notfound-inner">
+      <p class="code">404</p>
+      <h1 class="title">No route to host</h1>
+      <p class="lede body">
+        That page does not exist — it may have moved, or the link may be wrong.
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href={`${base}/`}>Back home</a>
+        <a class="btn btn-secondary" href={`${base}/projects`}>Browse projects</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+  }
+
+  .notfound-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .code {
+    font-family: var(--font-mono);
+    font-size: var(--text-5xl);
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .title {
+    font-size: var(--text-3xl);
+  }
+
+  .body {
+    text-align: center;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+</style>

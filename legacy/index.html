@@ -46,7 +46,7 @@
         }
         
         .hero-bg {
-            background: url('resources/hero-cybersecurity.png') center/cover no-repeat;
+            background: url('hero-cybersecurity.png') center/cover no-repeat;
             position: relative;
         }
         
@@ -270,8 +270,32 @@
             }
         }
     </style>
+
+    <!-- Shared styles (mobile nav, focus states, motion + no-JS safety nets) -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Icons -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0A1628">
+
+    <!-- Canonical + social sharing -->
+    <link rel="canonical" href="https://larry-otieno.github.io/My-Porfolio/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Larry Otieno">
+    <meta property="og:title" content="Larry Otieno - Cybersecurity &amp; Digital Forensics">
+    <meta property="og:description" content="Computer Security and Forensics student at Kabarak University. Digital forensics, threat analysis and secure systems work.">
+    <meta property="og:url" content="https://larry-otieno.github.io/My-Porfolio/">
+    <meta property="og:image" content="https://larry-otieno.github.io/My-Porfolio/hero-cybersecurity.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Larry Otieno - Cybersecurity &amp; Digital Forensics">
+    <meta name="twitter:description" content="Computer Security and Forensics student at Kabarak University. Digital forensics, threat analysis and secure systems work.">
+    <meta name="twitter:image" content="https://larry-otieno.github.io/My-Porfolio/hero-cybersecurity.png">
+
+    <!-- Marks scripting as available so CSS can keep content visible if JS fails -->
+    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="font-sans text-white">
+    <a href="#home" class="skip-link">Skip to main content</a>
     <!-- Particle Background Canvas -->
     <canvas id="particle-canvas" class="particle-canvas"></canvas>
     
@@ -281,7 +305,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold glow-text">Larry Otieno</h1>
-                    <span class="ml-2 text-sm text-cyber-blue">Cybersecurity Analyst</span>
+                    <span class="ml-2 text-sm text-cyber-blue hidden sm:inline">Cybersecurity Analyst</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="#home" class="nav-link text-white hover:text-cyber-blue transition-colors">Home</a>
@@ -289,13 +313,22 @@
                     <a href="projects.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Projects</a>
                     <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Contact</a>
                 </div>
-                <div class="md:hidden">
-                    <button class="text-white hover:text-cyber-blue">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+                <button id="mobile-menu-toggle" type="button" class="mobile-menu-btn md:hidden" aria-label="Open main menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <svg class="menu-icon-open w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg class="menu-icon-close w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu md:hidden hidden">
+            <div class="px-4 py-3 space-y-1">
+                <a href="#home" class="mobile-nav-link active" aria-current="page">Home</a>
+                <a href="about.html" class="mobile-nav-link">About</a>
+                <a href="projects.html" class="mobile-nav-link">Projects</a>
+                <a href="contact.html" class="mobile-nav-link">Contact</a>
             </div>
         </div>
     </nav>
@@ -451,7 +484,7 @@
                         <li class="splide__slide">
                             <div class="project-card">
                                 <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
-                                    <img src="https://kimi-web-img.moonshot.cn/img/d3lkc3n5th01x7.cloudfront.net/94ca17e9922b155ea007014144b9fe4cae9ab624.png" alt="ThreatScope AI" class="w-full h-full object-cover">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/d3lkc3n5th01x7.cloudfront.net/94ca17e9922b155ea007014144b9fe4cae9ab624.png" alt="ThreatScope AI" class="w-full h-full object-cover" loading="lazy" decoding="async">
                                 </div>
                                 <h3 class="text-2xl font-bold text-cyber-blue mb-4">ThreatScope AI</h3>
                                 <p class="text-gray-300 mb-4">
@@ -470,7 +503,7 @@
                         <li class="splide__slide">
                             <div class="project-card">
                                 <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
-                                    <img src="https://kimi-web-img.moonshot.cn/img/jelvix.com/6a2cf8b1852a20ad1255445fc02a6b05922bb1d7.jpg" alt="Secure Farm Database" class="w-full h-full object-cover">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/jelvix.com/6a2cf8b1852a20ad1255445fc02a6b05922bb1d7.jpg" alt="Secure Farm Database" class="w-full h-full object-cover" loading="lazy" decoding="async">
                                 </div>
                                 <h3 class="text-2xl font-bold text-cyber-blue mb-4">Secure Farm Database</h3>
                                 <p class="text-gray-300 mb-4">
@@ -489,7 +522,7 @@
                         <li class="splide__slide">
                             <div class="project-card">
                                 <div class="h-48 bg-cyber-gray rounded-lg mb-6 overflow-hidden">
-                                    <img src="https://kimi-web-img.moonshot.cn/img/kravensecurity.com/7da131601d607b6df9512babab4fbaf02b7f5e1e.jpg" alt="Malware Analysis" class="w-full h-full object-cover">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/kravensecurity.com/7da131601d607b6df9512babab4fbaf02b7f5e1e.jpg" alt="Malware Analysis" class="w-full h-full object-cover" loading="lazy" decoding="async">
                                 </div>
                                 <h3 class="text-2xl font-bold text-cyber-blue mb-4">Malware Analysis Lab</h3>
                                 <p class="text-gray-300 mb-4">

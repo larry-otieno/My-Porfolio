@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://larry-otieno.github.io/My-Porfolio/sitemap-index.xml
