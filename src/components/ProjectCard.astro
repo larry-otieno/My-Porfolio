@@ -1,0 +1,130 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProjectCover from './ProjectCover.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, year, status, tags, hue, category } = project.data;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const statusLabel = {
+  'in-progress': 'In progress',
+  complete: 'Complete',
+  ongoing: 'Ongoing',
+}[status];
+---
+
+<article class="card card-interactive project-card" data-category={category}>
+  <div class="cover">
+    <ProjectCover slug={project.id} hue={hue} category={category} class="cover-art" />
+  </div>
+
+  <div class="body">
+    <div class="meta">
+      <span class="year">{year}</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class:list={['status', `status-${status}`]}>{statusLabel}</span>
+    </div>
+
+    <h3 class="title">
+      <a href={`${base}/projects/${project.id}`} class="stretched">{title}</a>
+    </h3>
+
+    <p class="summary">{summary}</p>
+
+    <ul class="tags" aria-label="Technologies used">
+      {tags.slice(0, 4).map((tag) => <li class="tag">{tag}</li>)}
+    </ul>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .cover {
+    aspect-ratio: 20 / 11;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--surface-inset);
+  }
+
+  .cover-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s var(--ease-out-quart);
+  }
+
+  .project-card:hover .cover-art {
+    transform: scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card:hover .cover-art {
+      transform: none;
+    }
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.625rem;
+    padding: 1.25rem;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  .status-in-progress {
+    color: var(--signal);
+  }
+
+  .status-complete {
+    color: var(--success);
+  }
+
+  .title {
+    font-size: var(--text-lg);
+  }
+
+  /* Whole card is the click target, but the link text stays the accessible name */
+  .stretched::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .title a:hover {
+    color: var(--accent);
+  }
+
+  .summary {
+    flex: 1;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.25rem 0 0;
+  }
+</style>

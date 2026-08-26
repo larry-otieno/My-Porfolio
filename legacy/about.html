@@ -181,28 +181,68 @@
             border: 1px solid #FF073A;
         }
     </style>
+
+    <!-- Shared styles (mobile nav, focus states, motion + no-JS safety nets) -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Icons -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0A1628">
+
+    <!-- Canonical + social sharing -->
+    <link rel="canonical" href="https://larry-otieno.github.io/My-Porfolio/about.html">
+    <meta property="og:type" content="profile">
+    <meta property="og:site_name" content="Larry Otieno">
+    <meta property="og:title" content="About - Larry Otieno">
+    <meta property="og:description" content="Background, education and certifications of Larry Otieno, Computer Security and Forensics student at Kabarak University.">
+    <meta property="og:url" content="https://larry-otieno.github.io/My-Porfolio/about.html">
+    <meta property="og:image" content="https://larry-otieno.github.io/My-Porfolio/hero-cybersecurity.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About - Larry Otieno">
+    <meta name="twitter:description" content="Background, education and certifications of Larry Otieno, Computer Security and Forensics student at Kabarak University.">
+    <meta name="twitter:image" content="https://larry-otieno.github.io/My-Porfolio/hero-cybersecurity.png">
+
+    <!-- Marks scripting as available so CSS can keep content visible if JS fails -->
+    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="font-sans text-white">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-cyber-navy/90 backdrop-blur-md border-b border-cyber-blue/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold glow-text">Larry Otieno</h1>
-                    <span class="ml-2 text-sm text-cyber-blue">Cybersecurity Analyst</span>
+                    <span class="ml-2 text-sm text-cyber-blue hidden sm:inline">Cybersecurity Analyst</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="index.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Home</a>
-                    <a href="about.html" class="nav-link text-white hover:text-cyber-blue transition-colors active">About</a>
+                    <a href="about.html" class="nav-link text-white hover:text-cyber-blue transition-colors active" aria-current="page">About</a>
                     <a href="projects.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Projects</a>
                     <a href="contact.html" class="nav-link text-white hover:text-cyber-blue transition-colors">Contact</a>
                 </div>
+                <button id="mobile-menu-toggle" type="button" class="mobile-menu-btn md:hidden" aria-label="Open main menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <svg class="menu-icon-open w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg class="menu-icon-close w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu md:hidden hidden">
+            <div class="px-4 py-3 space-y-1">
+                <a href="index.html" class="mobile-nav-link">Home</a>
+                <a href="about.html" class="mobile-nav-link active" aria-current="page">About</a>
+                <a href="projects.html" class="mobile-nav-link">Projects</a>
+                <a href="contact.html" class="mobile-nav-link">Contact</a>
             </div>
         </div>
     </nav>
     
     <!-- Hero Section -->
-    <section class="pt-24 pb-16">
+    <section id="main-content" class="pt-24 pb-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center animate-on-scroll">
                 <h1 class="text-5xl lg:text-6xl font-bold mb-6">
@@ -221,7 +261,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div class="animate-on-scroll">
                     <div class="h-96 bg-cyber-gray rounded-lg overflow-hidden">
-                        <img src="https://kimi-web-img.moonshot.cn/img/images.credly.com/1305a84ab0dac698afcd10d9547c3a08d34bc8aa.png" alt="Cybersecurity Professional" class="w-full h-full object-cover">
+                        <img src="https://kimi-web-img.moonshot.cn/img/images.credly.com/1305a84ab0dac698afcd10d9547c3a08d34bc8aa.png" alt="Cybersecurity Professional" class="w-full h-full object-cover" loading="lazy" decoding="async">
                     </div>
                 </div>
                 
@@ -327,7 +367,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="cert-card animate-on-scroll">
                     <div class="h-32 bg-cyber-blue/20 rounded-lg mb-4 flex items-center justify-center">
-                        <img src="https://kimi-web-img.moonshot.cn/img/images.credly.com/1305a84ab0dac698afcd10d9547c3a08d34bc8aa.png" alt="NIST Certification" class="h-20 w-auto">
+                        <img src="https://kimi-web-img.moonshot.cn/img/images.credly.com/1305a84ab0dac698afcd10d9547c3a08d34bc8aa.png" alt="NIST Certification" class="h-20 w-auto" loading="lazy" decoding="async">
                     </div>
                     <h3 class="text-xl font-bold text-cyber-blue mb-2">NIST CSF 2.0</h3>
                     <p class="text-gray-300 mb-4">Comprehensive training in the NIST Cybersecurity Framework version 2.0</p>
@@ -336,7 +376,7 @@
                 
                 <div class="cert-card animate-on-scroll">
                     <div class="h-32 bg-cyber-blue/20 rounded-lg mb-4 flex items-center justify-center">
-                        <img src="https://kimi-web-img.moonshot.cn/img/cybersecuritycanada.com/af29b2344dce9878f2d187062df18dbcffa7d1b5.png" alt="CSA Certification" class="h-20 w-auto">
+                        <img src="https://kimi-web-img.moonshot.cn/img/cybersecuritycanada.com/af29b2344dce9878f2d187062df18dbcffa7d1b5.png" alt="CSA Certification" class="h-20 w-auto" loading="lazy" decoding="async">
                     </div>
                     <h3 class="text-xl font-bold text-cyber-blue mb-2">CSA Security Guidance v5</h3>
                     <p class="text-gray-300 mb-4">Cloud Security Alliance Security Guidance version 5 certification</p>
@@ -345,7 +385,7 @@
                 
                 <div class="cert-card animate-on-scroll">
                     <div class="h-32 bg-cyber-blue/20 rounded-lg mb-4 flex items-center justify-center">
-                        <img src="https://kimi-web-img.moonshot.cn/img/gsdcdata.s3.amazonaws.com/c9962187188d2924fe5b0cc25e7784504c2a165a.jpg" alt="IBM Certification" class="h-20 w-auto">
+                        <img src="https://kimi-web-img.moonshot.cn/img/gsdcdata.s3.amazonaws.com/c9962187188d2924fe5b0cc25e7784504c2a165a.jpg" alt="IBM Certification" class="h-20 w-auto" loading="lazy" decoding="async">
                     </div>
                     <h3 class="text-xl font-bold text-cyber-blue mb-2">IBM Skills Build Cybersecurity</h3>
                     <p class="text-gray-300 mb-4">Advanced cybersecurity concepts and threat detection techniques</p>

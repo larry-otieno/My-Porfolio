@@ -1,0 +1,474 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCarousel from '../components/ProjectCarousel.astro';
+import HashTool from '../components/HashTool.astro';
+import { site, skillGroups, socials, certifications } from '../config/site';
+import SocialIcon from '../components/SocialIcon.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const featured = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const latestWriteups = (await getCollection('writeups'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => b.data.published.getTime() - a.data.published.getTime())
+  .slice(0, 3);
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'short' });
+---
+
+<BaseLayout title="Home" isHome>
+  <!-- Hero ---------------------------------------------------------------- -->
+  <section class="hero scanlines">
+    <div class="grid-backdrop" aria-hidden="true"></div>
+    <div class="shell hero-inner">
+      <h1 class="hero-title">
+        {site.name}
+      </h1>
+
+      <p class="hero-role">
+        <span class="role-prompt" aria-hidden="true">$</span>
+        <span class="role-text" data-typewriter={site.role}>{site.role}</span><span
+          class="caret"
+          aria-hidden="true"></span>
+      </p>
+
+      <p class="hero-lede">
+        I am a Computer Security and Forensics graduate from {site.university} in Kenya,
+        having already completed my undergraduate degree and now awaiting graduation while bringing
+        hands-on full-stack development experience, particularly in frontend architecture using Next.js,
+        React and TypeScript. I build secure, polished interfaces and close the vulnerabilities that matter most.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={`${base}/projects`}>View projects</a>
+        <a class="btn btn-secondary" href={`${base}/contact`}>Get in touch</a>
+      </div>
+
+      <ul class="hero-socials">
+        {
+          socials.map((social) => (
+            <li>
+              <a
+                href={social.href}
+                class="hero-social"
+                rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                target={social.href.startsWith('http') ? '_blank' : undefined}
+              >
+                <SocialIcon icon={social.icon} size="0.9rem" class="hero-social-icon" />
+                <span>{social.handle}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Credentials strip --------------------------------------------------- -->
+  <section class="credentials" aria-label="Certifications">
+    <div class="shell">
+      <ul class="credential-strip reveal">
+        {
+          certifications.map((cert) => (
+            <li class="credential">
+              <span class="credential-issuer">{cert.issuer}</span>
+              <span class="credential-title">{cert.title}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Focus areas --------------------------------------------------------- -->
+  <section class="section" id="skills">
+    <div class="shell">
+      <header class="section-head reveal">
+        <p class="eyebrow">What I work on</p>
+        <h2 class="section-title">Focus areas</h2>
+        <p class="lede">
+          Tools and frameworks I have actually used, grouped by the kind of problem
+          they solve. No self-assigned percentages — the work on the projects page is
+          the evidence.
+        </p>
+      </header>
+
+      <div class="skill-grid">
+        {
+          skillGroups.map((group) => (
+            <div class="card skill-card reveal">
+              <h3 class="skill-title">{group.title}</h3>
+              <p class="skill-desc">{group.description}</p>
+              <ul class="skill-items">
+                {group.items.map((item) => (
+                  <li class="tag">{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured projects --------------------------------------------------- -->
+  <section class="section section-alt" id="work">
+    <div class="shell">
+      <header class="section-head reveal">
+        <p class="eyebrow">Selected work</p>
+        <h2 class="section-title">Projects</h2>
+        <p class="lede">
+          Each write-up covers the problem, the approach, and what went wrong along
+          the way — the last part being the one that actually taught me something.
+        </p>
+      </header>
+
+      <div class="reveal">
+        <ProjectCarousel projects={featured} />
+      </div>
+
+      <div class="section-foot reveal">
+        <a class="btn btn-secondary" href={`${base}/projects`}>All projects</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Writing --------------------------------------------------------------- -->
+  <section class="section" id="writing">
+    <div class="shell">
+      <header class="section-head reveal">
+        <p class="eyebrow">Writing</p>
+        <h2 class="section-title">Recent writeups</h2>
+        <p class="lede">Short pieces on things I got wrong and what I changed afterwards.</p>
+      </header>
+
+      <ul class="writeup-list">
+        {
+          latestWriteups.map((entry) => (
+            <li class="reveal">
+              <a class="card card-interactive writeup-card" href={`${base}/writeups/${entry.id}`}>
+                <div class="writeup-meta">
+                  <time datetime={entry.data.published.toISOString()}>
+                    {dateFormat.format(entry.data.published)}
+                  </time>
+                  <span aria-hidden="true">·</span>
+                  <span>{entry.data.readingTime} min</span>
+                </div>
+                <h3 class="writeup-title">{entry.data.title}</h3>
+                <p class="writeup-summary">{entry.data.summary}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="section-foot reveal">
+        <a class="btn btn-secondary" href={`${base}/writeups`}>All writeups</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive tool ------------------------------------------------------- -->
+  <section class="section section-alt" id="tool">
+    <div class="shell-narrow">
+      <header class="section-head reveal">
+        <p class="eyebrow">Try it</p>
+        <h2 class="section-title">Verify a hash</h2>
+        <p class="lede">
+          The first step of any acquisition is proving the copy matches the original.
+          This does that in your browser — nothing is uploaded anywhere.
+        </p>
+      </header>
+      <div class="reveal">
+        <HashTool />
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA ----------------------------------------------------------------- -->
+  <section class="section section-alt">
+    <div class="shell-narrow cta reveal">
+      <h2 class="cta-title">Looking for an intern?</h2>
+      <p class="lede cta-lede">
+        I am available for frontend engineering, full-stack product work, and security-focused
+        collaborations where user experience and strong defensive engineering both matter.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={`${base}/contact`}>Start a conversation</a>
+        <a class="btn btn-secondary" href={`${base}/about`}>More about me</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero ------------------------------------------------------------------ */
+  .hero {
+    position: relative;
+    padding-block: clamp(4rem, 12vw, 8.5rem) clamp(3rem, 8vw, 6rem);
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .hero-title {
+    font-size: var(--text-5xl);
+    font-weight: 680;
+    letter-spacing: -0.035em;
+    margin-top: 0.25rem;
+  }
+
+  .hero-role {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    color: var(--accent);
+  }
+
+  .role-prompt {
+    color: var(--terminal);
+    text-shadow: 0 0 10px var(--terminal-glow);
+  }
+
+  .role-text {
+    /* Reserve the line so the typewriter doesn't reflow the layout as it types */
+    min-height: 1em;
+  }
+
+  .hero-lede {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    max-width: 54ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .hero-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+  }
+
+  .hero-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    transition: color 0.2s var(--ease-out-quart);
+  }
+
+  .hero-social:hover {
+    color: var(--accent);
+  }
+
+  .hero-social-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  /* Credentials strip ----------------------------------------------------- */
+  .credentials {
+    background: var(--surface-inset);
+    border-block: 1px solid var(--border-subtle);
+  }
+
+  .credential-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 2.5rem;
+    list-style: none;
+    padding: 1.5rem 0;
+    margin: 0;
+  }
+
+  .credential {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    position: relative;
+  }
+
+  /* Divider between credentials, hidden on the first and on wrapped rows */
+  .credential + .credential::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.1rem;
+    inset-inline-start: -1.25rem;
+    width: 1px;
+    background: var(--border-default);
+  }
+
+  .credential-issuer {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+  }
+
+  .credential-title {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  /* Sections -------------------------------------------------------------- */
+  .section-alt {
+    background: var(--surface-inset);
+    border-block: 1px solid var(--border-subtle);
+  }
+
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .section-title {
+    font-size: var(--text-3xl);
+  }
+
+  .section-foot {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+
+  /* Skills ---------------------------------------------------------------- */
+  .skill-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  }
+
+  .skill-card {
+    padding: 1.5rem;
+  }
+
+  .skill-title {
+    font-size: var(--text-base);
+    font-weight: 620;
+  }
+
+  .skill-desc {
+    margin-top: 0.4rem;
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+  }
+
+  .skill-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  /* Writeups -------------------------------------------------------------- */
+  .writeup-list {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .writeup-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1.5rem;
+  }
+
+  .writeup-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  .writeup-title {
+    font-size: var(--text-base);
+    line-height: 1.35;
+  }
+
+  .writeup-card:hover .writeup-title {
+    color: var(--accent);
+  }
+
+  .writeup-summary {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  /* CTA ------------------------------------------------------------------- */
+  .cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .cta-title {
+    font-size: var(--text-3xl);
+  }
+
+  .cta-lede {
+    text-align: center;
+  }
+</style>
+
+<script>
+  /* Types the hero role line character by character, like a command being
+     entered at a prompt. The full text is already in the DOM (server-rendered),
+     so with no JS or reduced-motion it simply stays put and the caret holds. */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const roleEl = document.querySelector<HTMLElement>('.role-text[data-typewriter]');
+
+  if (roleEl && !reduceMotion) {
+    const full = roleEl.dataset.typewriter ?? roleEl.textContent ?? '';
+    roleEl.textContent = '';
+    let i = 0;
+    const type = () => {
+      roleEl.textContent = full.slice(0, i);
+      if (i < full.length) {
+        i += 1;
+        window.setTimeout(type, 45);
+      }
+    };
+    window.setTimeout(type, 350);
+  }
+</script>

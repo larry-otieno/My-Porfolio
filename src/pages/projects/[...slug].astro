@@ -1,0 +1,245 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCover from '../../components/ProjectCover.astro';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+};
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props as Props;
+const { Content } = await render(project);
+const { title, summary, year, status, tags, hue, category, repo, demo } = project.data;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const statusLabel = {
+  'in-progress': 'In progress',
+  complete: 'Complete',
+  ongoing: 'Ongoing',
+}[status];
+
+// Neighbouring projects for the footer navigation
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const position = all.findIndex((p) => p.id === project.id);
+const previous = position > 0 ? all[position - 1] : undefined;
+const next = position < all.length - 1 ? all[position + 1] : undefined;
+---
+
+<BaseLayout
+  title={title}
+  description={summary}
+  ogType="article"
+  breadcrumbs={[
+    { label: 'Projects', href: `${base}/projects` },
+    { label: title, href: `${base}/projects/${project.id}` },
+  ]}
+>
+  <article>
+    <header class="project-head">
+      <div class="shell-narrow">
+        <a class="back" href={`${base}/projects`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          All projects
+        </a>
+
+        <div class="meta">
+          <span class="year">{year}</span>
+          <span aria-hidden="true">·</span>
+          <span class:list={['status', `status-${status}`]}>{statusLabel}</span>
+        </div>
+
+        <h1 class="project-title">{title}</h1>
+        <p class="project-summary">{summary}</p>
+
+        <ul class="tags" aria-label="Technologies used">
+          {tags.map((tag) => <li class="tag">{tag}</li>)}
+        </ul>
+
+        {
+          (repo || demo) && (
+            <div class="links">
+              {repo && (
+                <a class="btn btn-secondary" href={repo} rel="noopener noreferrer" target="_blank">
+                  View source
+                </a>
+              )}
+              {demo && (
+                <a class="btn btn-secondary" href={demo} rel="noopener noreferrer" target="_blank">
+                  Live demo
+                </a>
+              )}
+            </div>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="cover-wrap shell-narrow">
+      <ProjectCover slug={project.id} hue={hue} category={category} class="cover" />
+    </div>
+
+    <div class="shell-narrow">
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <nav class="project-nav" aria-label="Other projects">
+    <div class="shell-narrow project-nav-inner">
+      {
+        previous ? (
+          <a class="card card-interactive nav-card" href={`${base}/projects/${previous.id}`}>
+            <span class="nav-dir">← Previous</span>
+            <span class="nav-title">{previous.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a class="card card-interactive nav-card nav-card-next" href={`${base}/projects/${next.id}`}>
+            <span class="nav-dir">Next →</span>
+            <span class="nav-title">{next.data.title}</span>
+          </a>
+        )
+      }
+    </div>
+  </nav>
+</BaseLayout>
+
+<style>
+  .project-head {
+    padding-block: clamp(2.5rem, 7vw, 4.5rem) 2rem;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    transition: color 0.2s var(--ease-out-quart);
+  }
+
+  .back:hover {
+    color: var(--accent);
+  }
+
+  .back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  .status-in-progress {
+    color: var(--signal);
+  }
+
+  .status-complete {
+    color: var(--success);
+  }
+
+  .project-title {
+    margin-top: 0.75rem;
+    font-size: var(--text-4xl);
+  }
+
+  .project-summary {
+    margin-top: 1rem;
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .cover-wrap {
+    margin-bottom: 3rem;
+  }
+
+  .cover {
+    width: 100%;
+    aspect-ratio: 20 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+  }
+
+  /* Project-to-project navigation ----------------------------------------- */
+  .project-nav {
+    padding-block: clamp(3rem, 8vw, 5rem);
+  }
+
+  .project-nav-inner {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  .nav-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.25rem;
+  }
+
+  .nav-dir {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  .nav-title {
+    font-weight: 620;
+  }
+
+  .nav-card:hover .nav-title {
+    color: var(--accent);
+  }
+
+  @media (min-width: 40rem) {
+    .project-nav-inner {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .nav-card-next {
+      text-align: right;
+    }
+  }
+</style>

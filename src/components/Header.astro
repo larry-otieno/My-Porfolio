@@ -1,0 +1,324 @@
+---
+import { nav, site } from '../config/site';
+import ThemeToggle from './ThemeToggle.astro';
+import CommandPalette from './CommandPalette.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const here = Astro.url.pathname.replace(base, '').replace(/\/$/, '') || '/';
+
+const links = nav.map((item) => ({
+  ...item,
+  url: `${base}${item.href}`.replace(/\/$/, '') || '/',
+  isCurrent: item.href === '/' ? here === '/' : here.startsWith(item.href),
+}));
+---
+
+<header class="header">
+  <div class="shell header-inner">
+    <a href={`${base}/` || '/'} class="brand" aria-label={`${site.name} — home`}>
+      <span class="brand-mark" aria-hidden="true">LO</span>
+      <span class="brand-text">
+        <span class="brand-name">{site.name}</span>
+        <span class="brand-role">{site.role}</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main">
+      {
+        links.map((link) => (
+          <a
+            href={link.url}
+            class:list={['nav-link', { 'is-current': link.isCurrent }]}
+            aria-current={link.isCurrent ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-actions">
+      <CommandPalette />
+      <ThemeToggle />
+      <button
+        id="menu-toggle"
+        type="button"
+        class="menu-toggle"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path class="bar-top" d="M4 8h16" stroke-linecap="round"></path>
+          <path class="bar-bottom" d="M4 16h16" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!--
+    Distinct landmark name from the desktop nav above. Only one of the two is
+    ever exposed (the other is display:none at its breakpoint), but duplicate
+    landmark names are ambiguous to screen readers that list them.
+  -->
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile" hidden>
+    <div class="shell mobile-nav-inner">
+      {
+        links.map((link) => (
+          <a
+            href={link.url}
+            class:list={['mobile-nav-link', { 'is-current': link.isCurrent }]}
+            aria-current={link.isCurrent ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--surface-base) 82%, transparent);
+    backdrop-filter: blur(12px) saturate(150%);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 4rem;
+  }
+
+  /* Brand ---------------------------------------------------------------- */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-default);
+    background: var(--surface-inset);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  .brand-name {
+    font-weight: 620;
+    font-size: var(--text-sm);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .brand-role {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+
+  /* Desktop nav ---------------------------------------------------------- */
+  .desktop-nav {
+    display: none;
+    gap: 0.25rem;
+  }
+
+  .nav-link {
+    position: relative;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition:
+      color 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+    background: var(--surface-inset);
+  }
+
+  .nav-link.is-current {
+    color: var(--text-primary);
+  }
+
+  .nav-link.is-current::after {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.15rem;
+    height: 1.5px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Menu button ---------------------------------------------------------- */
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .menu-toggle:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background: var(--surface-inset);
+  }
+
+  .menu-toggle svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .menu-toggle .bar-top,
+  .menu-toggle .bar-bottom {
+    transition:
+      transform 0.25s var(--ease-out-quart),
+      opacity 0.2s var(--ease-out-quart);
+    transform-origin: center;
+  }
+
+  .menu-toggle[aria-expanded='true'] .bar-top {
+    transform: translateY(4px) rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded='true'] .bar-bottom {
+    transform: translateY(-4px) rotate(-45deg);
+  }
+
+  /* Mobile nav ----------------------------------------------------------- */
+  .mobile-nav {
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface-base);
+    overflow: hidden;
+  }
+
+  .mobile-nav[hidden] {
+    display: none;
+  }
+
+  .mobile-nav-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding-block: 0.75rem 1rem;
+  }
+
+  .mobile-nav-link {
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition:
+      color 0.2s var(--ease-out-quart),
+      background 0.2s var(--ease-out-quart);
+  }
+
+  .mobile-nav-link:hover {
+    color: var(--text-primary);
+    background: var(--surface-inset);
+  }
+
+  .mobile-nav-link.is-current {
+    color: var(--accent);
+    background: var(--accent-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .desktop-nav {
+      display: flex;
+    }
+
+    .menu-toggle,
+    .mobile-nav {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-nav:not([hidden]) .mobile-nav-inner {
+      animation: slide-down 0.25s var(--ease-out-quart);
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-nav');
+
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+
+    toggle.addEventListener('click', () => setOpen(menu.hidden));
+
+    // Following a link should not leave the panel covering the destination
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !menu.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Growing past the breakpoint hides the panel via CSS; reset the state too
+    window.matchMedia('(min-width: 48rem)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+</script>

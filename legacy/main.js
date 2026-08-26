@@ -2,6 +2,7 @@
 
 // Initialize all components when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    initializeMobileMenu();
     initializeAnimations();
     initializeThreatIndicator();
     initializeSkillsRadar();
@@ -10,6 +11,50 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeContactForm();
     initializeQuiz();
 });
+
+// True when the visitor has asked the OS to minimise animation
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Mobile navigation
+function initializeMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    if (!toggle || !menu) return;
+
+    const iconOpen = toggle.querySelector('.menu-icon-open');
+    const iconClose = toggle.querySelector('.menu-icon-close');
+
+    function setMenu(open) {
+        menu.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close main menu' : 'Open main menu');
+        if (iconOpen) iconOpen.classList.toggle('hidden', open);
+        if (iconClose) iconClose.classList.toggle('hidden', !open);
+        document.body.classList.toggle('menu-open', open);
+    }
+
+    toggle.addEventListener('click', function() {
+        setMenu(menu.classList.contains('hidden'));
+    });
+
+    // Close after following an in-page link, otherwise the panel covers the target
+    menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => setMenu(false));
+    });
+
+    // Escape closes and returns focus to the toggle
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+            setMenu(false);
+            toggle.focus();
+        }
+    });
+
+    // Reset state if the viewport grows past the mobile breakpoint while open
+    window.matchMedia('(min-width: 768px)').addEventListener('change', function(e) {
+        if (e.matches) setMenu(false);
+    });
+}
 
 // Smooth scroll navigation
 function initializeScrollEffects() {
@@ -128,11 +173,22 @@ function initializeThreatIndicator() {
     // Initialize first threat level
     updateThreatLevel();
 
-    // Change threat level every 4 seconds
-    setInterval(updateThreatLevel, 4000);
+    // Auto-cycle, unless the visitor asked for reduced motion
+    if (!prefersReducedMotion) {
+        setInterval(updateThreatLevel, 4000);
+    }
 
-    // Click to manually cycle through threats
+    // Keyboard-reachable: it is an interactive control, so make it a real one
+    indicator.setAttribute('role', 'button');
+    indicator.setAttribute('tabindex', '0');
+    indicator.setAttribute('aria-label', 'Simulate the next threat level');
     indicator.addEventListener('click', updateThreatLevel);
+    indicator.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            updateThreatLevel();
+        }
+    });
 }
 
 // Skills Radar Chart
@@ -254,7 +310,7 @@ function initializeProjectCarousel() {
         perPage: 3,
         perMove: 1,
         gap: '2rem',
-        autoplay: true,
+        autoplay: !prefersReducedMotion,
         interval: 4000,
         pauseOnHover: true,
         breakpoints: {
@@ -287,32 +343,111 @@ function initializeProjectCarousel() {
     });
 }
 
-// Contact Form Validation
+// Contact Form
 function initializeContactForm() {
     const form = document.getElementById('contact-form');
     if (!form) return;
 
-    form.addEventListener('submit', function(e) {
+    const status = document.getElementById('form-status');
+    const submitBtn = form.querySelector('[type="submit"]');
+    const endpoint = (form.dataset.endpoint || '').trim();
+    const fallbackEmail = form.dataset.fallbackEmail || '';
+
+    function setStatus(message, state) {
+        if (!status) return;
+        status.textContent = message;
+        status.dataset.state = state;
+        status.classList.remove('hidden');
+    }
+
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+
+        if (!validateContactForm()) {
+            setStatus('Please correct the highlighted fields and try again.', 'error');
+            const firstInvalid = form.querySelector('.error');
+            if (firstInvalid) firstInvalid.focus();
+            return;
+        }
+
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData);
-        
-        // Validate form
-        if (validateContactForm(data)) {
-            // Show success message
-            showNotification('Message sent successfully! I\'ll get back to you soon.', 'success');
+
+        // Silently drop anything that filled the honeypot
+        if (formData.get('_gotcha')) {
             form.reset();
-        } else {
-            showNotification('Please fill in all required fields correctly.', 'error');
+            return;
+        }
+
+        // No backend configured yet - hand the message to the visitor's mail
+        // client rather than pretending it was delivered.
+        if (!endpoint) {
+            sendViaMailClient(formData);
+            return;
+        }
+
+        const originalLabel = submitBtn ? submitBtn.textContent : '';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+        }
+        setStatus('Sending your message...', 'sending');
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+                headers: { Accept: 'application/json' }
+            });
+
+            if (!response.ok) throw new Error('Request failed with status ' + response.status);
+
+            setStatus('Message sent. I will get back to you soon.', 'success');
+            form.reset();
+            form.querySelectorAll('.valid, .error').forEach(el => el.classList.remove('valid', 'error'));
+            form.querySelectorAll('.error-message').forEach(el => { el.textContent = ''; });
+        } catch (err) {
+            console.error('Contact form submission failed:', err);
+            if (fallbackEmail) {
+                setStatus('Sending failed. Opening your email app instead - or write to ' + fallbackEmail + ' directly.', 'error');
+                sendViaMailClient(formData, true);
+            } else {
+                setStatus('Sending failed. Please try again later.', 'error');
+            }
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+            }
         }
     });
 
+    function sendViaMailClient(formData, quiet) {
+        if (!fallbackEmail) {
+            setStatus('This form is not connected yet. Please use the email address above.', 'error');
+            return;
+        }
+
+        const subject = `Portfolio enquiry: ${formData.get('subject') || 'General'}`;
+        const body = [
+            `Name: ${formData.get('name') || ''}`,
+            `Email: ${formData.get('email') || ''}`,
+            `Organization: ${formData.get('company') || '-'}`,
+            `Preferred contact: ${formData.get('contact_method') || '-'}`,
+            '',
+            formData.get('message') || ''
+        ].join('\n');
+
+        window.location.href = `mailto:${fallbackEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+        if (!quiet) {
+            setStatus('Your email app should now open with this message ready to send.', 'success');
+        }
+    }
+
     // Real-time validation
-    const inputs = form.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
+    form.querySelectorAll('input, textarea, select').forEach(input => {
         input.addEventListener('blur', function() {
-            validateField(this);
+            if (this.name && this.name !== '_gotcha') validateField(this);
         });
     });
 }
@@ -334,8 +469,11 @@ function validateField(field) {
             message = isValid ? '' : 'Please enter a valid email address';
             break;
         case 'subject':
-            isValid = value.length >= 5;
-            message = isValid ? '' : 'Subject must be at least 5 characters long';
+            // A <select> on contact.html, a free-text field elsewhere
+            isValid = field.tagName === 'SELECT' ? value !== '' : value.length >= 5;
+            message = isValid
+                ? ''
+                : (field.tagName === 'SELECT' ? 'Please choose an inquiry type' : 'Subject must be at least 5 characters long');
             break;
         case 'message':
             isValid = value.length >= 20;
@@ -366,12 +504,13 @@ function validateField(field) {
     return isValid;
 }
 
-function validateContactForm(data) {
+function validateContactForm() {
     const required = ['name', 'email', 'subject', 'message'];
-    return required.every(field => {
+    // reduce, not every, so all fields get marked rather than stopping at the first
+    return required.reduce((allValid, field) => {
         const input = document.querySelector(`[name="${field}"]`);
-        return validateField(input);
-    });
+        return (input ? validateField(input) : true) && allValid;
+    }, true);
 }
 
 function showNotification(message, type) {

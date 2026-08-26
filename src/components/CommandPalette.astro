@@ -1,0 +1,493 @@
+---
+import { getCollection } from 'astro:content';
+import { nav, socials } from '../config/site';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const writeups = (await getCollection('writeups'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+
+type Command = {
+  id: string;
+  label: string;
+  group: string;
+  href?: string;
+  action?: string;
+  hint?: string;
+  keywords: string;
+};
+
+/** IDs land in aria-activedescendant and querySelector, so keep them simple. */
+const slug = (value: string) => value.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'home';
+
+const commands: Command[] = [
+  ...nav.map((item) => ({
+    id: `cmd-nav-${slug(item.href)}`,
+    label: item.label,
+    group: 'Pages',
+    href: `${base}${item.href}`.replace(/\/$/, '') || '/',
+    keywords: item.label.toLowerCase(),
+  })),
+  ...projects.map((project) => ({
+    id: `cmd-project-${slug(project.id)}`,
+    label: project.data.title,
+    group: 'Projects',
+    href: `${base}/projects/${project.id}`,
+    hint: project.data.year,
+    keywords: `${project.data.title} ${project.data.tags.join(' ')} ${project.data.category}`.toLowerCase(),
+  })),
+  ...writeups.map((entry) => ({
+    id: `cmd-writeup-${slug(entry.id)}`,
+    label: entry.data.title,
+    group: 'Writeups',
+    href: `${base}/writeups/${entry.id}`,
+    hint: String(entry.data.published.getFullYear()),
+    keywords: `${entry.data.title} ${entry.data.tags.join(' ')}`.toLowerCase(),
+  })),
+  {
+    id: 'cmd-action-theme',
+    label: 'Toggle colour theme',
+    group: 'Actions',
+    action: 'theme',
+    hint: 'system / light / dark',
+    keywords: 'theme dark light mode colour color appearance',
+  },
+  {
+    id: 'cmd-action-copy-email',
+    label: 'Copy email address',
+    group: 'Actions',
+    action: 'copy-email',
+    keywords: 'email copy contact address mail',
+  },
+  ...socials
+    .filter((social) => social.icon !== 'mail')
+    .map((social) => ({
+      id: `cmd-social-${slug(social.label)}`,
+      label: `Open ${social.label}`,
+      group: 'Elsewhere',
+      href: social.href,
+      hint: social.handle,
+      keywords: `${social.label} ${social.handle}`.toLowerCase(),
+    })),
+];
+---
+
+<button id="palette-open" type="button" class="palette-trigger" aria-label="Open command palette">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <circle cx="11" cy="11" r="6.5"></circle>
+    <path d="M16 16l4.5 4.5" stroke-linecap="round"></path>
+  </svg>
+  <span class="palette-trigger-text">Search</span>
+  <kbd class="palette-kbd"><span class="mod">Ctrl</span>K</kbd>
+</button>
+
+<dialog id="palette" class="palette" aria-label="Command palette">
+  <div class="palette-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5"></circle>
+      <path d="M16 16l4.5 4.5" stroke-linecap="round"></path>
+    </svg>
+    <input
+      id="palette-input"
+      type="text"
+      class="palette-input"
+      placeholder="Search pages, projects, writeups…"
+      autocomplete="off"
+      spellcheck="false"
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="palette-list"
+      aria-autocomplete="list"
+    />
+    <kbd class="palette-kbd">Esc</kbd>
+  </div>
+
+  <ul id="palette-list" class="palette-list" role="listbox" aria-label="Results">
+    {
+      commands.map((command, index) => (
+        <li
+          class="palette-item"
+          role="option"
+          id={command.id}
+          data-keywords={command.keywords}
+          data-group={command.group}
+          data-href={command.href}
+          data-action={command.action}
+          aria-selected={index === 0 ? 'true' : 'false'}
+        >
+          <span class="palette-group">{command.group}</span>
+          <span class="palette-label">{command.label}</span>
+          {command.hint && <span class="palette-hint">{command.hint}</span>}
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="palette-empty" data-palette-empty hidden>No matches.</p>
+
+  <div class="palette-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+    <span><kbd>↵</kbd> select</span>
+    <span><kbd>Esc</kbd> close</span>
+  </div>
+</dialog>
+
+<style>
+  /* Trigger ---------------------------------------------------------------- */
+  .palette-trigger {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding: 0 0.6rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-inset);
+    color: var(--text-tertiary);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition:
+      color 0.2s var(--ease-out-quart),
+      border-color 0.2s var(--ease-out-quart);
+  }
+
+  .palette-trigger:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  .palette-trigger svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .palette-trigger-text {
+    margin-right: 1.5rem;
+  }
+
+  .palette-kbd {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-default);
+    background: var(--surface-raised);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+  }
+
+  @media (min-width: 48rem) {
+    .palette-trigger {
+      display: inline-flex;
+    }
+  }
+
+  /* Dialog ----------------------------------------------------------------- */
+  .palette {
+    width: min(38rem, calc(100vw - 2rem));
+    max-height: min(28rem, calc(100dvh - 8rem));
+    padding: 0;
+    margin-top: 12vh;
+    margin-inline: auto;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.2),
+      0 24px 64px -16px rgb(0 0 0 / 0.5);
+    overflow: hidden;
+  }
+
+  /*
+    Scope the flex layout to [open]. A bare `display: flex` on the dialog beats
+    the UA stylesheet's `display: none` for the closed state, which leaves the
+    panel painted and swallowing clicks on every page.
+  */
+  .palette[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .palette::backdrop {
+    background: rgb(0 0 0 / 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .palette[open] {
+      animation: palette-in 0.16s var(--ease-out-quart);
+    }
+  }
+
+  @keyframes palette-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem) scale(0.985);
+    }
+  }
+
+  .palette-search {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+  }
+
+  .palette-search svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .palette-input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--text-base);
+  }
+
+  .palette-input:focus {
+    outline: none;
+  }
+
+  .palette-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  /* Results ---------------------------------------------------------------- */
+  .palette-list {
+    flex: 1;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0.4rem;
+    overscroll-behavior: contain;
+  }
+
+  .palette-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    scroll-margin: 0.4rem;
+  }
+
+  .palette-item[hidden] {
+    display: none;
+  }
+
+  .palette-item[aria-selected='true'] {
+    background: var(--accent-muted);
+  }
+
+  .palette-group {
+    flex-shrink: 0;
+    width: 5.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  .palette-label {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--text-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .palette-item[aria-selected='true'] .palette-label {
+    color: var(--accent);
+  }
+
+  .palette-hint {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+  }
+
+  .palette-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+  }
+
+  .palette-empty[hidden] {
+    display: none;
+  }
+
+  .palette-foot {
+    display: flex;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface-inset);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .palette-foot kbd {
+    display: inline-block;
+    min-width: 1.1rem;
+    padding: 0 0.25rem;
+    margin-right: 0.15rem;
+    border-radius: 3px;
+    border: 1px solid var(--border-default);
+    background: var(--surface-raised);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-align: center;
+  }
+</style>
+
+<script>
+  const dialog = document.getElementById('palette') as HTMLDialogElement | null;
+  const input = document.getElementById('palette-input') as HTMLInputElement | null;
+  const openBtn = document.getElementById('palette-open');
+  const list = document.getElementById('palette-list');
+
+  if (dialog && input && list) {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.palette-item'));
+    const empty = dialog.querySelector<HTMLElement>('[data-palette-empty]');
+    const email = 'otienolarry7@gmail.com';
+
+    // macOS shows ⌘, everything else Ctrl. navigator.platform is deprecated,
+    // so this reads the user agent instead.
+    if (/mac|iphone|ipad|ipod/i.test(navigator.userAgent)) {
+      document.querySelectorAll('.mod').forEach((el) => (el.textContent = '⌘'));
+    }
+
+    const shown = () => items.filter((item) => !item.hidden);
+
+    function select(next: HTMLElement | undefined) {
+      if (!next) return;
+      items.forEach((item) => item.setAttribute('aria-selected', String(item === next)));
+      input!.setAttribute('aria-activedescendant', next.id);
+      next.scrollIntoView({ block: 'nearest' });
+    }
+
+    function filter() {
+      const query = input!.value.trim().toLowerCase();
+      const terms = query.split(/\s+/).filter(Boolean);
+
+      items.forEach((item) => {
+        const haystack = `${item.dataset.keywords ?? ''} ${item.dataset.group?.toLowerCase() ?? ''}`;
+        item.hidden = !terms.every((term) => haystack.includes(term));
+      });
+
+      const visible = shown();
+      if (empty) empty.hidden = visible.length > 0;
+      select(visible[0]);
+    }
+
+    function run(item: HTMLElement) {
+      const href = item.dataset.href;
+      const action = item.dataset.action;
+
+      if (action === 'theme') {
+        close();
+        document.getElementById('theme-toggle')?.click();
+        return;
+      }
+
+      if (action === 'copy-email') {
+        navigator.clipboard?.writeText(email).catch(() => {});
+        close();
+        return;
+      }
+
+      if (href) {
+        if (href.startsWith('http')) window.open(href, '_blank', 'noopener');
+        else window.location.href = href;
+      }
+    }
+
+    function open() {
+      dialog!.showModal();
+      input!.value = '';
+      filter();
+      input!.focus();
+    }
+
+    function close() {
+      dialog!.close();
+    }
+
+    openBtn?.addEventListener('click', open);
+
+    document.addEventListener('keydown', (event) => {
+      // Ctrl/Cmd+K opens; "/" opens unless the user is typing somewhere
+      const target = event.target as HTMLElement | null;
+      const typing =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable;
+
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        dialog!.open ? close() : open();
+        return;
+      }
+
+      if (event.key === '/' && !typing && !dialog!.open) {
+        event.preventDefault();
+        open();
+      }
+    });
+
+    input.addEventListener('input', filter);
+
+    input.addEventListener('keydown', (event) => {
+      const visible = shown();
+      if (visible.length === 0) return;
+
+      const currentIndex = visible.findIndex((item) => item.getAttribute('aria-selected') === 'true');
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        select(visible[(currentIndex + 1) % visible.length]);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        select(visible[(currentIndex - 1 + visible.length) % visible.length]);
+      } else if (event.key === 'Home') {
+        event.preventDefault();
+        select(visible[0]);
+      } else if (event.key === 'End') {
+        event.preventDefault();
+        select(visible[visible.length - 1]);
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const current = visible[currentIndex] ?? visible[0];
+        if (current) run(current);
+      }
+    });
+
+    items.forEach((item) => {
+      item.addEventListener('click', () => run(item));
+      item.addEventListener('mousemove', () => select(item));
+    });
+
+    // Clicking the backdrop closes; the dialog element itself fills the panel
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) close();
+    });
+  }
+</script>
