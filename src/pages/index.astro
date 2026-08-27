@@ -452,24 +452,3 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 's
   }
 </style>
 
-<script>
-  /* Types the hero role line character by character, like a command being
-     entered at a prompt. The full text is already in the DOM (server-rendered),
-     so with no JS or reduced-motion it simply stays put and the caret holds. */
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const roleEl = document.querySelector<HTMLElement>('.role-text[data-typewriter]');
-
-  if (roleEl && !reduceMotion) {
-    const full = roleEl.dataset.typewriter ?? roleEl.textContent ?? '';
-    roleEl.textContent = '';
-    let i = 0;
-    const type = () => {
-      roleEl.textContent = full.slice(0, i);
-      if (i < full.length) {
-        i += 1;
-        window.setTimeout(type, 45);
-      }
-    };
-    window.setTimeout(type, 350);
-  }
-</script>
