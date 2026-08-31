@@ -48,7 +48,7 @@ const total = String(projects.length).padStart(2, '0');
     class="carousel-track"
     data-carousel-track
     tabindex="0"
-    role="group"
+    role="list"
     aria-label="Featured projects — scroll horizontally"
   >
     {
@@ -183,8 +183,8 @@ const total = String(projects.length).padStart(2, '0');
   }
 
   .carousel-dot {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
     padding: 0;
     border: none;
     border-radius: 999px;
@@ -196,7 +196,7 @@ const total = String(projects.length).padStart(2, '0');
   }
 
   .carousel-dot[aria-current='true'] {
-    width: 1.4rem;
+    width: 1.8rem;
     background: var(--accent);
   }
 
