@@ -153,7 +153,7 @@
    because the two light blocks above are byte-identical and can't be targeted
    individually; a darker green is needed to clear 4.5:1 on light surfaces. */
 :root[data-theme='light'] {
-  --terminal: #0a7d54;
+  --terminal: #0a7d42;
   --terminal-muted: rgb(10 125 84 / 0.1);
   --terminal-glow: rgb(10 125 84 / 0.22);
   --scanline: rgb(13 16 23 / 0.03);
@@ -161,7 +161,7 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --terminal: #0a7d54;
+    --terminal: #0a7d42;
     --terminal-muted: rgb(10 125 84 / 0.1);
     --terminal-glow: rgb(10 125 84 / 0.22);
     --scanline: rgb(13 16 23 / 0.03);

@@ -107,6 +107,12 @@ const total = String(projects.length).padStart(2, '0');
     opacity: 0.5;
   }
 
+  /* Ensure the current index has sufficient contrast on the light theme. */
+  :global(html[data-theme='light']) .carousel-count [data-carousel-current] {
+    color: var(--text-primary);
+    text-shadow: none;
+  }
+
   .carousel-controls {
     display: flex;
     gap: 0.5rem;
